@@ -49,6 +49,6 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintf(flag.CommandLine.Output(), "%s [hex string] [hex string]\n", os.Args[0])
+	fmt.Fprintf(flag.CommandLine.Output(), "%s hex_string hex_string\n", os.Args[0])
 	flag.PrintDefaults()
 }
