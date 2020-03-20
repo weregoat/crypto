@@ -2,6 +2,8 @@ package util
 
 import "bytes"
 
+// Match compares a plaintext with a list of words separated by punctuation and
+// returns the number of matches.
 func Match(plainText []byte, punctuation []byte, dictionary [][]byte) int {
 	if len(plainText) == 0 {
 		return 0

@@ -27,7 +27,7 @@ You now have our permission to make "ETAOIN SHRDLU" jokes on Twitter.
 
 /* https://en.wikipedia.org/wiki/Most_common_words_in_English */
 var dict = []string{"the", "be", "to", "of", "and", "a", "in", "that", "have"}
-var puntuation = []byte{' ', ',', '.', ';'}
+var punctuation = []byte{' ', ',', '.', ';'}
 
 func main() {
 	/*
@@ -63,8 +63,20 @@ func main() {
 	for k, v := range dict {
 		words[k] = []byte(v)
 	}
-	var key byte
-	var solution string
+
+	key, plainText, rank := rank(cypherText, punctuation, words)
+	fmt.Printf("Encoded cyphertext: %s\n", *encoded)
+	fmt.Printf("With key %s(%q) becomes '%s' (rank %d)\n", hex.EncodeToString([]byte{key}), key, plainText, rank)
+
+}
+
+func usage() {
+	fmt.Fprintf(flag.CommandLine.Output(), "%s -cypher string\n", os.Args[0])
+	flag.PrintDefaults()
+}
+
+func rank(cypherText []byte, punctuation []byte, words [][]byte) (key byte, solution string, rank int) {
+
 	max := 0
 	// var solutions []Try
 	for i := 0; i < 256; i++ {
@@ -74,21 +86,12 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		score := util.Match(plainText, puntuation, words)
+		score := util.Match(plainText, punctuation, words)
 		if score > max {
 			max = score
 			key = b
 			solution = string(plainText)
 		}
 	}
-	if max > 0 {
-		fmt.Printf("Encoded cyphertext: %s\n", *encoded)
-		fmt.Printf("With key %s(%q) becomes '%s' (rank %d)\n", hex.EncodeToString([]byte{key}), key, solution, max)
-	}
-
-}
-
-func usage() {
-	fmt.Fprintf(flag.CommandLine.Output(), "%s -cypher string\n", os.Args[0])
-	flag.PrintDefaults()
+	return key,solution,max
 }
