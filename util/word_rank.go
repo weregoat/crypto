@@ -1,10 +1,25 @@
 package util
 
-import "bytes"
+import (
+	"bytes"
+)
+
+var Dict = [][]byte{
+	[]byte("the"),
+	[]byte("be"),
+	[]byte("to"),
+	[]byte("of"),
+	[]byte("and"),
+	[]byte("a"),
+	[]byte("in"),
+	[]byte("that"),
+	[]byte("have"),
+}
+var Punctuation = []byte{' ', ',', '.', ';'}
 
 // Match compares a plaintext with a list of words separated by punctuation and
 // returns the number of matches.
-func Match(plainText []byte, punctuation []byte, dictionary [][]byte) int {
+func Rank(plainText []byte, punctuation []byte, dictionary [][]byte) int {
 	if len(plainText) == 0 {
 		return 0
 	}
@@ -30,3 +45,4 @@ func Match(plainText []byte, punctuation []byte, dictionary [][]byte) int {
 	}
 	return total
 }
+

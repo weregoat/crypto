@@ -2,7 +2,7 @@ package util
 
 import "testing"
 
-func TestMatch(t *testing.T) {
+func TestRank(t *testing.T) {
 	dict := [][]byte{[]byte("the"), []byte("be")}
 	punctuation := []byte{' '}
 
@@ -21,7 +21,7 @@ func TestMatch(t *testing.T) {
 		{"Be The Bee", punctuation, dict, 2},
 	}
 	for _,test := range tests {
-		rank := Match([]byte(test.Plaintext), test.Punctuation, test.Dictionary)
+		rank := Rank([]byte(test.Plaintext), test.Punctuation, test.Dictionary)
 		if rank != test.ExpectedRank {
 			t.Errorf("expecting rank %d , got %d", test.ExpectedRank, rank)
 		}
