@@ -37,3 +37,19 @@ func TestFixedXORBytesError(t *testing.T) {
 		t.Errorf("expecting error because of different buffer lenght got nothing")
 	}
 }
+
+func TestRepeatingXORBytes(t *testing.T) {
+	plainText := []byte("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal")
+	expected, err := hex.DecodeString(  "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f")
+	if err != nil {
+		t.Error(err)
+	}
+	key := []byte("ICE")
+	cypherText := RepeatingXORBytes(plainText, key)
+	for i,j := range cypherText {
+		if j != expected[i] {
+			t.Errorf("expecting byte %d to be %q, but got %q", i, expected[i], j)
+		}
+	}
+
+}

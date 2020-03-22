@@ -31,3 +31,11 @@ func FixedXORBytes(a,b []byte) ([]byte, error) {
 	}
 	return dst, nil
 }
+
+func RepeatingXORBytes(plainText []byte, key []byte) []byte {
+	cypherText := make([]byte, len(plainText))
+	for i,j := range plainText {
+		cypherText[i] = j ^ key[i%len(key)]
+	}
+	return cypherText
+}
