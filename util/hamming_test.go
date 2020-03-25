@@ -28,7 +28,15 @@ func TestHammingDistance(t *testing.T) {
 		t.Errorf("expecting a distance of %d, but got %d", expected, result)
 	}
 
+	a = []byte{1,2,3}
+	b = []byte{1,2}
+	result, err = HammingDistance(a, b)
+	if err == nil {
+		t.Errorf("expecting error from different slice lenghts, but got nothing")
+	}
+
 }
+
 
 func BenchmarkHammingDistance(ben *testing.B) {
 	a := []byte("this is a test")

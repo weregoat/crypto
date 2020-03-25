@@ -5,9 +5,10 @@ import (
 	"math/bits"
 )
 
+// HammingDistance calculates the Hamming distance between two byte slices.
 func HammingDistance(a, b []byte) (int, error) {
 	if len(a) != len(b) {
-		return 0, fmt.Errorf("supplied arguments are of different length: %d vs %d", len(a), len(b))
+		return 0, fmt.Errorf("supplied byte slices are of different length: %d vs %d", len(a), len(b))
 	}
 
 	/*
