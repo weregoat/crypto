@@ -14,7 +14,7 @@ func TestEncodeToBase64(t *testing.T) {
 	}
 	/* Check hex decoding */
 	back := hex.EncodeToString(src)
-	if  back != challenge {
+	if back != challenge {
 		t.Errorf("the converted byte stream %s is not the expected one %s", back, challenge)
 	}
 	expected := []byte(solution)
@@ -22,7 +22,7 @@ func TestEncodeToBase64(t *testing.T) {
 	if string(enc) != string(expected) {
 		t.Errorf("expecting %s got %s", expected, enc)
 	}
-	for i,b := range enc {
+	for i, b := range enc {
 		s := expected[i]
 		if b != s {
 			t.Errorf("expecting %q at byte %d got %q", s, i, b)

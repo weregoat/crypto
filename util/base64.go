@@ -16,7 +16,7 @@ So go ahead and make that happen. You'll need to use this code for the rest of t
 
 Cryptopals Rule
 Always operate on raw bytes, never on encoded strings. Only use hex and base64 for pretty-printing.
- */
+*/
 
 func EncodeToBase64(src []byte) []byte {
 	/* Get the length of the destination array */
@@ -25,5 +25,3 @@ func EncodeToBase64(src []byte) []byte {
 	base64.StdEncoding.Encode(dst, src)
 	return dst
 }
-
-

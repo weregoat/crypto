@@ -19,7 +19,7 @@ If your function works properly, then when you feed it the string:
 746865206b696420646f6e277420706c6179
 */
 
-func FixedXORBytes(a,b []byte) ([]byte, error) {
+func FixedXORBytes(a, b []byte) ([]byte, error) {
 	n := len(a)
 	if len(b) != n {
 		err := fmt.Errorf("different buffer length %d<>%d", len(a), len(b))
@@ -34,7 +34,7 @@ func FixedXORBytes(a,b []byte) ([]byte, error) {
 
 func RepeatingXORBytes(plainText []byte, key []byte) []byte {
 	cypherText := make([]byte, len(plainText))
-	for i,j := range plainText {
+	for i, j := range plainText {
 		cypherText[i] = j ^ key[i%len(key)]
 	}
 	return cypherText
