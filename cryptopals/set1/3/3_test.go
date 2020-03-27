@@ -23,7 +23,7 @@ How? Devise some method for "scoring" a piece of English plaintext. Character fr
 
 Achievement Unlocked
 You now have our permission to make "ETAOIN SHRDLU" jokes on Twitter.
- */
+*/
 
 func TestChallenge3(t *testing.T) {
 	/* "Cooking MC's like a pound of bacon" with key 58('X') */
@@ -57,9 +57,8 @@ func TestChallenge3(t *testing.T) {
 	if topScorePlaintext != "Cooking MC's like a pound of bacon" {
 		t.Errorf("expecting highest ranken plaintex to be 'Cooking MC's like a pound of bacon', but got %+q", topScorePlaintext)
 	}
-	if math.Abs(topScore - 0.0019369260) > 0.000001 {
+	if math.Abs(topScore-0.0019369260) > 0.000001 {
 		t.Errorf("expecting rank to be around 0.0019369260, but got %.10f", topScore)
 	}
-
 
 }

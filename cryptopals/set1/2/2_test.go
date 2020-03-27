@@ -19,7 +19,7 @@ If your function works properly, then when you feed it the string:
 ... should produce:
 
 746865206b696420646f6e277420706c6179
- */
+*/
 func TestChallenge2(t *testing.T) {
 	a, err := hex.DecodeString("1c0111001f010100061a024b53535009181c")
 	if err != nil {

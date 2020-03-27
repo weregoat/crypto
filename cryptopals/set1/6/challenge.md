@@ -47,3 +47,6 @@ Other links with similar explanations:
 
 
 I do wonder how they came out with it. 
+
+Something interesting, although obvious if you think about it.
+If you have a key and then you create a key by concatenating two or more of the first key, the result is the same (doh!).

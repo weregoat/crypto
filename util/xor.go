@@ -1,8 +1,18 @@
 package util
 
 import (
+	"bytes"
 	"fmt"
+	"log"
+	"sort"
 )
+
+type Solution struct {
+	Key            []byte
+	PlainText      []byte
+	FrequencyScore float64
+	WordScore      int
+}
 
 /*
 Fixed XOR
@@ -32,10 +42,64 @@ func FixedXORBytes(a, b []byte) ([]byte, error) {
 	return dst, nil
 }
 
-func RepeatingXORBytes(plainText []byte, key []byte) []byte {
-	cypherText := make([]byte, len(plainText))
-	for i, j := range plainText {
-		cypherText[i] = j ^ key[i%len(key)]
+func RepeatingXORBytes(src []byte, key []byte) []byte {
+	dst := make([]byte, len(src))
+	for i, j := range src {
+		dst[i] = j ^ key[i%len(key)]
 	}
-	return cypherText
+	return dst
+}
+
+func BreakRepeatingXOR(cypherText []byte, maxKeySize, maxSolutions int) []Solution {
+	var solutions []Solution
+	// Guess the key sizes
+	distances := GetBlockDistances(cypherText, MinBlockSize, maxKeySize)
+	sort.Slice(distances, func(i, j int) bool {
+		return distances[i].Median < distances[j].Median // Using median here... because.
+	})
+	if len(distances) < maxSolutions {
+		maxSolutions = len(distances)
+	}
+	// Try the most probable keys first
+	for _, distance := range distances[:maxSolutions] {
+		var key []byte
+		// Transpose the cyphertext
+		blocks := Transpose(cypherText, distance.BlockSize)
+		// For each transposed block try to decrypt it with a single byte key
+		for _, block := range blocks {
+			topScore := 0.0
+			var keyByte byte
+			for i := 0; i < 256; i++ {
+				b := byte(i)
+				a := bytes.Repeat([]byte{b}, len(block))
+				xor, err := FixedXORBytes(a, block)
+				if err != nil {
+					log.Fatal(err)
+				}
+				// Check the frequency score of the XOR'd block
+				// If the key byte is right, it should amount to English letters
+				lowerCase := bytes.ToLower(xor)
+				score := FrequencyScore(lowerCase, FrequencyMap(Frequencies))
+				// Keep the key byte resulting in the top score
+				if score > topScore {
+					topScore = score
+					keyByte = b
+				}
+			}
+			// Add the byte to the guessed key
+			key = append(key, keyByte)
+		}
+		// Now we went through all the blocks and we have a possible key (*the*
+		// key we think most probable)
+		solution := Solution{
+			Key:       key,
+			PlainText: RepeatingXORBytes(cypherText, key),
+		}
+		solution.FrequencyScore = FrequencyScore(
+			solution.PlainText, FrequencyMap(Frequencies),
+		)
+		solution.WordScore = WordScore(solution.PlainText, Punctuation, Dict)
+		solutions = append(solutions, solution)
+	}
+	return solutions
 }
