@@ -37,9 +37,9 @@ func Split(src []byte, blockSize int) [][]byte {
 
 // Transpose returns a slice of slice bytes of the first byte of each block
 // and the second byte of each block and so forth...
-func Transpose(cypherText []byte, keySize int) [][]byte {
+func Transpose(cipherText []byte, keySize int) [][]byte {
 	var tBlocks = make([][]byte, keySize) // List of transposed blocks
-	blocks := Split(cypherText, keySize)
+	blocks := Split(cipherText, keySize)
 	for _, block := range blocks {
 		for i := 0; i < keySize; i++ {
 			if i < len(block) {
@@ -50,8 +50,8 @@ func Transpose(cypherText []byte, keySize int) [][]byte {
 	return tBlocks
 }
 
-// GetBlockDistances returns the normalised distances of blocks of different sizes of the cyphertext.
-func GetBlockDistances(cypherText []byte, min, max int) []NormalisedDistance {
+// GetBlockDistances returns the normalised distances of blocks of different sizes of the cipherText.
+func GetBlockDistances(cipherText []byte, min, max int) []NormalisedDistance {
 	var blockDistances []NormalisedDistance
 	if min <= 0 {
 		min = MinBlockSize
@@ -61,12 +61,12 @@ func GetBlockDistances(cypherText []byte, min, max int) []NormalisedDistance {
 	}
 	for size := min; size <= max; size++ {
 		// We need at least two blocks (in reality we need more, but this is the minimum).
-		if len(cypherText) < size*2 {
+		if len(cipherText) < size*2 {
 			break
 		}
 		var distance = NormalisedDistance{BlockSize: size}
-		// Split the cyphertext in blocks of the given size
-		blocks := Split(cypherText, size)
+		// Split the cipherText in blocks of the given size
+		blocks := Split(cipherText, size)
 		// Now we go through all the blocks and calculate the Hamming distance
 		// between each block and the next
 		var distances []float64 // We'll store here the normalised Hamming distances for median and mean calculation

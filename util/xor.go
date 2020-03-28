@@ -50,10 +50,10 @@ func RepeatingXORBytes(src []byte, key []byte) []byte {
 	return dst
 }
 
-func BreakRepeatingXOR(cypherText []byte, maxKeySize, maxSolutions int) []Solution {
+func BreakRepeatingXOR(cipherText []byte, maxKeySize, maxSolutions int) []Solution {
 	var solutions []Solution
 	// Guess the key sizes
-	distances := GetBlockDistances(cypherText, MinBlockSize, maxKeySize)
+	distances := GetBlockDistances(cipherText, MinBlockSize, maxKeySize)
 	sort.Slice(distances, func(i, j int) bool {
 		return distances[i].Median < distances[j].Median // Using median here... because.
 	})
@@ -63,8 +63,8 @@ func BreakRepeatingXOR(cypherText []byte, maxKeySize, maxSolutions int) []Soluti
 	// Try the most probable keys first
 	for _, distance := range distances[:maxSolutions] {
 		var key []byte
-		// Transpose the cyphertext
-		blocks := Transpose(cypherText, distance.BlockSize)
+		// Transpose the cipherText
+		blocks := Transpose(cipherText, distance.BlockSize)
 		// For each transposed block try to decrypt it with a single byte key
 		for _, block := range blocks {
 			topScore := 0.0
@@ -93,7 +93,7 @@ func BreakRepeatingXOR(cypherText []byte, maxKeySize, maxSolutions int) []Soluti
 		// key we think most probable)
 		solution := Solution{
 			Key:       key,
-			PlainText: RepeatingXORBytes(cypherText, key),
+			PlainText: RepeatingXORBytes(cipherText, key),
 		}
 		solution.FrequencyScore = FrequencyScore(
 			solution.PlainText, FrequencyMap(Frequencies),

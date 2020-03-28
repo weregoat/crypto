@@ -18,8 +18,8 @@ func TestChallenge6(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	cypherText, _ := base64.StdEncoding.DecodeString(string(encoded))
-	solutions := util.BreakRepeatingXOR(cypherText, 40, 1)
+	cipherText, _ := base64.StdEncoding.DecodeString(string(encoded))
+	solutions := util.BreakRepeatingXOR(cipherText, 40, 1)
 	if len(solutions) != 1 {
 		t.Errorf("expecting 1 solution, got %d", len(solutions))
 	}

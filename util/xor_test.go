@@ -45,8 +45,8 @@ func TestRepeatingXORBytes(t *testing.T) {
 		t.Error(err)
 	}
 	key := []byte("ICE")
-	cypherText := RepeatingXORBytes(plainText, key)
-	for i, j := range cypherText {
+	cipherText := RepeatingXORBytes(plainText, key)
+	for i, j := range cipherText {
 		if j != expected[i] {
 			t.Errorf("expecting byte %d to be %q, but got %q", i, expected[i], j)
 		}
