@@ -1,6 +1,7 @@
 package util
 
 import (
+	"bytes"
 	"log"
 	"sort"
 )
@@ -96,4 +97,21 @@ func GetBlockDistances(cipherText []byte, min, max int) []NormalisedDistance {
 		blockDistances = append(blockDistances, distance)
 	}
 	return blockDistances
+}
+
+
+// HasRepeatingBlocks returns if there is, in a supposedly ciphertext, at least
+// one block that is repeated at least once (i.e. there are, at least, two
+// identical blocks; could be more than one block, could be repeated more
+// than once).
+func HasRepeatingBlocks(src []byte, blockSize int) bool {
+	blocks := Split(src, blockSize)
+	for i := 0; i < len(blocks) - 1; i++ {
+		for j:=i+1; j < len(blocks); j++ {
+			if bytes.Equal(blocks[i], blocks[j]) {
+				return true
+			}
+		}
+	}
+	return false
 }
