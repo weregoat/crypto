@@ -13,7 +13,8 @@ func TestHasRepeatingBlocks(t *testing.T) {
 		{"AABBBAACBC", 2, false}, // No repetition AA != BA+AC
 		{"AABBAACBCC", 2, true}, // AA repeated this time
 		{"ABCAAABBBCCC", 3, false}, // is not about single byte, but blocks
-		{"ABCAAABBBCCCABC", 3, true}, // 
+		{"ABCAAABBBCCCABC", 3, true}, //
+		{"ABCAAABBBCCCBCACBAACB", 3, false}, // Check order in block matters
 
 	}
 	for _, test := range tests {
