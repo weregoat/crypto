@@ -14,3 +14,6 @@ So: pad any block to a specific block length, by appending the number of bytes o
 ```
 "YELLOW SUBMARINE\x04\x04\x04\x04"
 ```
+
+## Goat notes
+[Wikipedia entry](https://en.wikipedia.org/wiki/Padding_(cryptography)#PKCS#5_and_PKCS#7) on Padding with PKCS#7.
