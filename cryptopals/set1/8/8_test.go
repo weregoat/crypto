@@ -38,10 +38,9 @@ func TestChallenge8(t *testing.T) {
 		}
 	}
 	if encoded != expectedText {
-		t.Errorf("expected line to be %q, but got %q", expectedText, encoded )
+		t.Errorf("expected line to be %q, but got %q", expectedText, encoded)
 	}
 	if line != expectedLineNumber {
 		t.Errorf("expected ciphertext to be at linet %d, but I got %d", expectedLineNumber, line)
 	}
 }
-
