@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-
 func TestAES128(t *testing.T) {
 	// Test vectors from https://csrc.nist.gov/projects/cryptographic-algorithm-validation-program/block-ciphers#AES
 
@@ -15,13 +14,12 @@ func TestAES128(t *testing.T) {
 	//	And, no, I didn't implement them all, just a few samples to verify my
 	//	implementation is not completely broken.
 
-
 	testVectors := []struct {
-		Key string
-		IV string
-		PlainText string
+		Key        string
+		IV         string
+		PlainText  string
 		CipherText string
-	} {
+	}{
 		// CBCGFSbox128.rsp
 		// 0
 		{
@@ -103,7 +101,6 @@ func TestAES128(t *testing.T) {
 			"ffffffffffffffffffffffffffffffff",
 			"3f5b8cc9ea855a0afa7347d23e8d664e",
 		},
-
 	}
 
 	for _, tv := range testVectors {
@@ -123,29 +120,28 @@ func TestAES128(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		encrypt, err := Encrypt(plainText, iv,key)
+		encrypt, err := Encrypt(plainText, iv, key)
 		if err != nil {
 			t.Error(err)
 		}
-		if ! bytes.Equal(encrypt, cipherText) {
+		if !bytes.Equal(encrypt, cipherText) {
 			t.Errorf("expecting cipherText to be %q, got %q",
 				base64.StdEncoding.EncodeToString(cipherText),
 				encrypt,
-				)
+			)
 		}
 		decrypt, err := Decrypt(cipherText, iv, key)
 		if err != nil {
 			t.Error(err)
 		}
-		if ! bytes.Equal(decrypt, plainText) {
+		if !bytes.Equal(decrypt, plainText) {
 			t.Errorf("expecting plainText to be %q, got %q",
 				base64.StdEncoding.EncodeToString(plainText),
 				base64.StdEncoding.EncodeToString(decrypt),
-				)
+			)
 		}
 	}
 }
-
 
 func TestMultiBlocks(t *testing.T) {
 	plainText := "Ehrsam, Meyer, Smith and Tuchman invented the Cipher Block Chaining (CBC) mode of operation in 1976."

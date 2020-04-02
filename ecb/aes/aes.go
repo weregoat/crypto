@@ -7,6 +7,7 @@ import (
 )
 
 const BlockSize = aes.BlockSize
+
 /* https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#ECB */
 
 func Decrypt(cipherText, key []byte) (plainText []byte, err error) {

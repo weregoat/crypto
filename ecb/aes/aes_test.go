@@ -49,10 +49,10 @@ func TestAES128(t *testing.T) {
 	*/
 
 	testVectors := []struct {
-		Key string
-		PlainText string
+		Key        string
+		PlainText  string
 		CipherText string
-	} {
+	}{
 		// ECBGFSbox128.rsp
 		// 0
 		{
@@ -123,7 +123,6 @@ func TestAES128(t *testing.T) {
 			"fffffffffffffffffffffffffffffffe",
 			"5c005e72c1418c44f569f2ea33ba54f3",
 		},
-
 	}
 
 	for _, tv := range testVectors {
@@ -143,14 +142,14 @@ func TestAES128(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		if ! bytes.Equal(encrypt, cipherText) {
+		if !bytes.Equal(encrypt, cipherText) {
 			t.Errorf("expecting cipherText to be %q, got %q", cipherText, encrypt)
 		}
 		decrypt, err := Decrypt(cipherText, key)
 		if err != nil {
 			t.Error(err)
 		}
-		if ! bytes.Equal(decrypt, plainText) {
+		if !bytes.Equal(decrypt, plainText) {
 			t.Errorf("expecting plainText to be %q, got %q", plainText, decrypt)
 		}
 	}

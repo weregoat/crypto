@@ -12,7 +12,7 @@ const BlockSize = aes.BlockSize
 func Encrypt(plainText, IV, key []byte) ([]byte, error) {
 	var cipherText []byte
 	blocks := pkcs7.Split(plainText, BlockSize)
-	for _,block := range blocks {
+	for _, block := range blocks {
 		xor, err := util.FixedXORBytes(block, IV)
 		if err != nil {
 			return cipherText, err
@@ -31,12 +31,12 @@ func Encrypt(plainText, IV, key []byte) ([]byte, error) {
 func Decrypt(cipherText, IV, key []byte) ([]byte, error) {
 	var plainText []byte
 	blocks := pkcs7.Split(cipherText, BlockSize)
-	for _,b := range blocks {
+	for _, b := range blocks {
 		db, err := aes.Decrypt(b, key)
 		if err != nil {
 			return plainText, err
 		}
-		xor, err := util.FixedXORBytes(db,IV)
+		xor, err := util.FixedXORBytes(db, IV)
 		if err != nil {
 			return plainText, err
 		}
