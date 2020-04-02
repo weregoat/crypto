@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/base64"
-	"gitlab.com/weregoat/crypto/util"
+	"gitlab.com/weregoat/crypto/ecb/aes"
 	"io/ioutil"
 	"log"
 	"testing"
@@ -20,7 +20,7 @@ func TestChalleng7(t *testing.T) {
 		t.Error(err)
 	}
 
-	plainText, err := util.DecryptAES128ECB(cipherText, key)
+	plainText, err := aes.Decrypt(cipherText, key)
 	if err != nil {
 		t.Error(err)
 	}
