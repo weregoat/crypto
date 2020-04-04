@@ -1,4 +1,4 @@
-package oracle
+package main
 
 import (
 	cbc "gitlab.com/weregoat/crypto/cbc/aes"

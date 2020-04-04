@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"crypto/aes"
-	"gitlab.com/weregoat/crypto/oracle"
 	"gitlab.com/weregoat/crypto/util"
 	"testing"
 )
@@ -14,14 +13,14 @@ func TestChallenge(t *testing.T) {
 	pSize := 4 * blockSize
 	plainText := bytes.Repeat([]byte{'A'}, pSize)
 	for i := 0; i < 50; i++ {
-		o := oracle.New(blockSize)
+		o := New(blockSize)
 		err := o.Encrypt(plainText)
 		if err != nil {
 			t.Error(err)
 		}
 		blocks := util.Split(o.CipherText, o.BlockSize)
 		for _, block := range blocks {
-			t.Logf("%q", util.EncodeToBase64(block))
+			t.Logf("% x", block)
 		}
 		isECB := util.HasRepeatingBlocks(o.CipherText, o.BlockSize)
 		switch isECB {
@@ -38,10 +37,12 @@ func TestChallenge(t *testing.T) {
 			t.Errorf("no random bytes were added to the plaintext, the encrypting function must be broken")
 		}
 
-		if isECB && o.Mode != oracle.ModeECB {
+		if isECB && o.Mode != ModeECB {
+			t.Log(o.Mode)
 			t.Errorf("expecting ECB mode, but failed to detect it")
 		}
-		if !isECB && o.Mode != oracle.ModeCBC {
+		if !isECB && o.Mode != ModeCBC {
+			t.Log(o.Mode)
 			t.Errorf("expecting not ECB mode, but is not CBC")
 		}
 	}

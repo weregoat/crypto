@@ -2,7 +2,6 @@ package aes
 
 import (
 	"bytes"
-	"encoding/base64"
 	"encoding/hex"
 	"testing"
 )
@@ -125,8 +124,8 @@ func TestAES128(t *testing.T) {
 			t.Error(err)
 		}
 		if !bytes.Equal(encrypt, cipherText) {
-			t.Errorf("expecting cipherText to be %q, got %q",
-				base64.StdEncoding.EncodeToString(cipherText),
+			t.Errorf("expecting cipherText to be % x, got % x",
+				cipherText,
 				encrypt,
 			)
 		}
@@ -135,9 +134,9 @@ func TestAES128(t *testing.T) {
 			t.Error(err)
 		}
 		if !bytes.Equal(decrypt, plainText) {
-			t.Errorf("expecting plainText to be %q, got %q",
-				base64.StdEncoding.EncodeToString(plainText),
-				base64.StdEncoding.EncodeToString(decrypt),
+			t.Errorf("expecting plainText to be % x, got % x",
+				plainText,
+				decrypt,
 			)
 		}
 	}
@@ -149,7 +148,7 @@ func TestMultiBlocks(t *testing.T) {
 	key := []byte("YELLOW SUBMARINE")
 	cipherText, err := Encrypt([]byte(plainText), key, iv)
 	if err != nil {
-		t.Errorf("%q", cipherText)
+		t.Error(err)
 	}
 	p, err := Decrypt(cipherText, key, iv)
 	if err != nil {
@@ -157,5 +156,22 @@ func TestMultiBlocks(t *testing.T) {
 	}
 	if string(p) != plainText {
 		t.Errorf("expecting %q, got %q", plainText, p)
+	}
+}
+
+func TestEmptyPlainText(t *testing.T) {
+	plainText := ""
+	iv := make([]byte, 16)
+	key := []byte("YELLOW SUBMARINE")
+	cipherText, err := Encrypt([]byte(plainText), key, iv)
+	if err != nil {
+		t.Error(err)
+	}
+	p, err := Decrypt(cipherText, key, iv)
+	if err != nil {
+		t.Error(err)
+	}
+	if string(p) != plainText {
+		t.Errorf("expecting % x, got % x", plainText, p)
 	}
 }

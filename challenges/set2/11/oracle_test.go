@@ -1,4 +1,4 @@
-package oracle
+package main
 
 import (
 	"bytes"
@@ -26,59 +26,69 @@ func TestOracle_New(t *testing.T) {
 
 func TestOracle_Encrypt(t *testing.T) {
 	blockSize := aes.BlockSize
-	pSize := blockSize
+tests:
 	for i := 0; i < 50; i++ {
+		pSize := blockSize * (1 + (i % 3)) // 16,32,48
 		text, err := util.RandomBytes(pSize)
 		if err != nil {
 			t.Error(err)
+			break tests
 		}
-		t.Logf("PlainText: %q", util.EncodeToBase64(text))
+		//t.Logf("PlainText: % x", text)
 		o := New(blockSize)
 		err = o.Encrypt(text)
 		if err != nil {
 			t.Error(err)
+			break tests
 		}
 		t.Logf("Mode: %s", o.Mode)
 		switch o.Mode {
 		case ModeCBC:
 			cipherText, err := cbc.Encrypt(o.PlainText, o.Key, o.IV)
+			t.Logf("Expected ciphertext: % x", cipherText)
+			t.Logf("Oracle ciphertext: % x", o.CipherText)
 			if err != nil {
-				t.Logf("Expected ciphertext: %q", util.EncodeToBase64(cipherText))
-				t.Logf("Oracle ciphertext: %q", util.EncodeToBase64(o.CipherText))
 				t.Error(err)
+				break tests
 			}
 			if !bytes.Equal(o.CipherText, cipherText) {
 				t.Fail()
+				break tests
 			}
 			plainText, err := cbc.Decrypt(o.CipherText, o.Key, o.IV)
-
+			t.Logf("Expected plaintext: % x", plainText)
+			t.Logf("Oracle plaintext: % x", o.PlainText)
 			if err != nil {
 				t.Error(err)
+				break tests
 			}
 			if !bytes.Equal(o.PlainText, plainText) {
-				t.Logf("Expected plaintext: %q", util.EncodeToBase64(plainText))
-				t.Logf("Oracle plaintext: %q", util.EncodeToBase64(o.PlainText))
 				t.Fail()
+				break tests
 			}
 
 		case ModeECB:
 			cipherText, err := ecb.Encrypt(o.PlainText, o.Key)
+			t.Logf("Expected ciphertext: % x", cipherText)
+			t.Logf("Oracle ciphertext: % x", o.CipherText)
 			if err != nil {
 				t.Error(err)
+				break tests
 			}
 			if !bytes.Equal(o.CipherText, cipherText) {
-				t.Logf("Expected ciphertext: %q", util.EncodeToBase64(cipherText))
-				t.Logf("Oracle ciphertext: %q", util.EncodeToBase64(o.CipherText))
 				t.Fail()
+				break tests
 			}
 			plainText, err := ecb.Decrypt(o.CipherText, o.Key)
+			t.Logf("Expected plaintext: % x", plainText)
+			t.Logf("Oracle plaintext: % x", o.PlainText)
 			if err != nil {
 				t.Error(err)
+				break tests
 			}
 			if !bytes.Equal(o.PlainText, plainText) {
-				t.Logf("Expected plaintext: %q", util.EncodeToBase64(plainText))
-				t.Logf("Oracle plaintext: %q", util.EncodeToBase64(o.PlainText))
 				t.Fail()
+				break tests
 			}
 		}
 

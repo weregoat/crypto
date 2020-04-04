@@ -33,3 +33,5 @@ This is the first challenge we've given you whose solution will break real crypt
 
 ## Goat notes
 I should have seen it coming from the previous challenge: [Wikipedia](https://en.wikipedia.org/wiki/Chosen-plaintext_attack#Different_forms).
+
+Okay, I now understand how it's supposed to work. And all my work today for moving the oracle code to a separate package has been wasted.
