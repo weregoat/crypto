@@ -170,3 +170,19 @@ func TestAES128(t *testing.T) {
 	}
 
 }
+
+func TestEncryptDecript(t *testing.T) {
+	plainText := "The simplest of the encryption modes is the Electronic Codebook (ECB) mode (named after conventional physical codebooks)."
+	key := []byte("YELLOW SUBMARINE")
+	cipherText, err := Encrypt([]byte(plainText), key)
+	if err != nil {
+		t.Errorf("%q", cipherText)
+	}
+	p, err := Decrypt(cipherText, key)
+	if err != nil {
+		t.Error(err)
+	}
+	if string(p) != plainText {
+		t.Errorf("expecting %q, got %q", plainText, p)
+	}
+}
