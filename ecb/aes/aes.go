@@ -25,7 +25,7 @@ func Decrypt(cipherText, key []byte) (plainText []byte, err error) {
 		be := bs + BlockSize
 		cipher.Decrypt(plainText[bs:be], cipherText[bs:be])
 	}
-	return plainText, err
+	return pkcs7.RemovePadding(plainText), err
 }
 
 func Encrypt(plaintext, key []byte) (cipherText []byte, err error) {

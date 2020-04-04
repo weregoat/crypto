@@ -4,39 +4,54 @@ import (
 	"bytes"
 	"crypto/aes"
 	"encoding/hex"
+	"gitlab.com/weregoat/crypto/pkcs7"
 	"gitlab.com/weregoat/crypto/util"
 	"testing"
 )
 
 func TestDecryptAES128(t *testing.T) {
 	key := []byte("YELLOW SUBMARINE")
-	plainText := "Yellow Submarine"
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
 		t.Error(err)
 	}
-	cipherText := make([]byte, len(plainText))
-	cipher.Encrypt(cipherText, []byte(plainText))
-	t.Logf("%q encrypted to %q with key %q", plainText, util.EncodeToBase64(cipherText), key)
-	decrypted, err := Decrypt(cipherText, key)
-	if err != nil {
-		t.Error(err)
-	}
+	for j := 0; j < 50; j++ {
+		plainText, err := util.RandomBytes(util.RandomInt(0,64))
+		if err != nil {
+			t.Error(err)
+		}
+		padded := pkcs7.Pad(plainText, aes.BlockSize)
+		var cipherText = make([]byte, len(padded))
+		i := 0
+		for {
+			t.Logf("%q", cipherText)
+			s := i * aes.BlockSize
+			if s >= len(padded) {
+				break
+			}
+			e := (i + 1) * aes.BlockSize
+			cipher.Encrypt(cipherText[s:e], padded[s:e])
+			i++
+		}
+		decrypted, err := Decrypt(cipherText, key)
+		if err != nil {
+			t.Error(err)
+		}
+		if string(decrypted) != string(plainText) {
+			t.Errorf("expecting %q, got %q", plainText, decrypted)
+		}
 
-	if string(decrypted) != plainText {
-		t.Errorf("expecting %q, got %q", plainText, decrypted)
-	}
+		shortKey := key[:12]
+		_, err = Decrypt(cipherText, shortKey)
+		if err == nil {
+			t.Errorf("expecting error because of short key, but got nothing")
+		}
 
-	shortKey := key[:12]
-	_, err = Decrypt(cipherText, shortKey)
-	if err == nil {
-		t.Errorf("expecting error because of short key, but got nothing")
-	}
-
-	shortText := cipherText[:12]
-	_, err = Decrypt(shortText, key)
-	if err == nil {
-		t.Errorf("expecting error because of short cipherText, but got nothing")
+		shortText := cipherText[:12]
+		_, err = Decrypt(shortText, key)
+		if err == nil {
+			t.Errorf("expecting error because of short cipherText, but got nothing")
+		}
 	}
 }
 

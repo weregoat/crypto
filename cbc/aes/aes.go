@@ -1,6 +1,7 @@
 package aes
 
 import (
+	"fmt"
 	"gitlab.com/weregoat/crypto/ecb/aes"
 	"gitlab.com/weregoat/crypto/pkcs7"
 	"gitlab.com/weregoat/crypto/util"
@@ -30,6 +31,10 @@ func Encrypt(plainText, key, iv []byte) ([]byte, error) {
 // Decrypt returns a plaintext from a ciphertext encrypted with AES in CBC mode.
 func Decrypt(cipherText, key, iv []byte) ([]byte, error) {
 	var plainText []byte
+	if len(cipherText)%BlockSize != 0 {
+		err := fmt.Errorf("ciphertext byte length(%d) must be a multiple of %d bytes", len(cipherText), BlockSize)
+		return plainText, err
+	}
 	blocks := pkcs7.Split(cipherText, BlockSize)
 	for _, b := range blocks {
 		db, err := aes.Decrypt(b, key)
@@ -41,8 +46,7 @@ func Decrypt(cipherText, key, iv []byte) ([]byte, error) {
 			return plainText, err
 		}
 		iv = b
-		t := pkcs7.RemovePadding(xor)
-		plainText = append(plainText, t...)
+		plainText = append(plainText, xor...)
 	}
-	return plainText, nil
+	return pkcs7.RemovePadding(plainText), nil
 }

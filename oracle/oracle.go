@@ -36,7 +36,6 @@ func (o *Oracle) Encrypt(plainText []byte) error  {
 	}
 	o.Key = key
 	o.PlainText = util.RandomPad(plainText, 5,10)
-	var cipherText []byte
 	rand.Seed(time.Now().UnixNano())
 	mode := rand.Intn(2)
 	switch mode {
@@ -46,7 +45,7 @@ func (o *Oracle) Encrypt(plainText []byte) error  {
 			o.Error = err
 			return err
 		}
-		cipherText, err = cbc.Encrypt(o.PlainText, iv, key)
+		cipherText, err := cbc.Encrypt(o.PlainText, key, iv)
 		if err != nil {
 			o.Error = err
 			return err
@@ -55,7 +54,7 @@ func (o *Oracle) Encrypt(plainText []byte) error  {
 		o.CipherText = cipherText
 		o.Mode = ModeCBC
 	case 1:
-		cipherText, err = ecb.Encrypt(o.PlainText, key)
+		cipherText, err := ecb.Encrypt(o.PlainText, key)
 		if err != nil {
 			o.Error = err
 			return err
