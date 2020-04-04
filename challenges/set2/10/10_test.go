@@ -17,7 +17,7 @@ func TestChallenge8(t *testing.T) {
 	cipherText, _ := base64.StdEncoding.DecodeString(string(encoded))
 	key := []byte("YELLOW SUBMARINE")
 	iv := make([]byte, 16) // Initialised a \x00
-	plainText, err := aes.Decrypt(cipherText, iv, key)
+	plainText, err := aes.Decrypt(cipherText, key, iv)
 	if err != nil {
 		t.Error(err)
 	}

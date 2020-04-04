@@ -120,7 +120,7 @@ func TestAES128(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		encrypt, err := Encrypt(plainText, iv, key)
+		encrypt, err := Encrypt(plainText, key, iv)
 		if err != nil {
 			t.Error(err)
 		}
@@ -130,7 +130,7 @@ func TestAES128(t *testing.T) {
 				encrypt,
 			)
 		}
-		decrypt, err := Decrypt(cipherText, iv, key)
+		decrypt, err := Decrypt(cipherText, key, iv)
 		if err != nil {
 			t.Error(err)
 		}
@@ -147,11 +147,11 @@ func TestMultiBlocks(t *testing.T) {
 	plainText := "Ehrsam, Meyer, Smith and Tuchman invented the Cipher Block Chaining (CBC) mode of operation in 1976."
 	iv := make([]byte, 16)
 	key := []byte("YELLOW SUBMARINE")
-	cipherText, err := Encrypt([]byte(plainText), iv, key)
+	cipherText, err := Encrypt([]byte(plainText), key, iv)
 	if err != nil {
 		t.Errorf("%q", cipherText)
 	}
-	p, err := Decrypt(cipherText, iv, key)
+	p, err := Decrypt(cipherText, key, iv)
 	if err != nil {
 		t.Error(err)
 	}
