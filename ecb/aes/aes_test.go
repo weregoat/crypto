@@ -186,3 +186,19 @@ func TestEncryptDecript(t *testing.T) {
 		t.Errorf("expecting %q, got %q", plainText, p)
 	}
 }
+
+func TestEmptyPlainText(t *testing.T) {
+	plainText := ""
+	key := []byte("YELLOW SUBMARINE")
+	cipherText, err := Encrypt([]byte(plainText), key)
+	if err != nil {
+		t.Error(err)
+	}
+	p, err := Decrypt(cipherText, key)
+	if err != nil {
+		t.Error(err)
+	}
+	if string(p) != plainText {
+		t.Errorf("expecting %x, got %x", plainText, p)
+	}
+}
