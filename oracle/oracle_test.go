@@ -3,18 +3,18 @@ package oracle
 import (
 	"bytes"
 	"crypto/aes"
-	"gitlab.com/weregoat/crypto/util"
-	"testing"
 	cbc "gitlab.com/weregoat/crypto/cbc/aes"
 	ecb "gitlab.com/weregoat/crypto/ecb/aes"
+	"gitlab.com/weregoat/crypto/util"
+	"testing"
 )
 
 func TestOracle_New(t *testing.T) {
-	tests := map[int]int {
-		0:0,
-		-1:0,
-		16:16,
-		31:31,
+	tests := map[int]int{
+		0:  0,
+		-1: 0,
+		16: 16,
+		31: 31,
 	}
 	for size, expected := range tests {
 		o := New(size)
@@ -55,7 +55,7 @@ func TestOracle_Encrypt(t *testing.T) {
 			if err != nil {
 				t.Error(err)
 			}
-			if ! bytes.Equal(o.PlainText, plainText) {
+			if !bytes.Equal(o.PlainText, plainText) {
 				t.Logf("Expected plaintext: %q", util.EncodeToBase64(plainText))
 				t.Logf("Oracle plaintext: %q", util.EncodeToBase64(o.PlainText))
 				t.Fail()
@@ -75,7 +75,7 @@ func TestOracle_Encrypt(t *testing.T) {
 			if err != nil {
 				t.Error(err)
 			}
-			if ! bytes.Equal(o.PlainText, plainText) {
+			if !bytes.Equal(o.PlainText, plainText) {
 				t.Logf("Expected plaintext: %q", util.EncodeToBase64(plainText))
 				t.Logf("Oracle plaintext: %q", util.EncodeToBase64(o.PlainText))
 				t.Fail()

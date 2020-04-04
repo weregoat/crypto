@@ -16,7 +16,7 @@ func TestDecryptAES128(t *testing.T) {
 		t.Error(err)
 	}
 	for j := 0; j < 50; j++ {
-		plainText, err := util.RandomBytes(util.RandomInt(0,64))
+		plainText, err := util.RandomBytes(util.RandomInt(0, 64))
 		if err != nil {
 			t.Error(err)
 		}

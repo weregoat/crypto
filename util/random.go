@@ -4,7 +4,6 @@ import (
 	rand "crypto/rand"
 	"log"
 	"math/big"
-
 )
 
 // GenerateRandomKey returns a slice of random bytes of the given length.
@@ -14,7 +13,7 @@ func RandomBytes(size int) ([]byte, error) {
 		return key, nil
 	}
 	key = make([]byte, size)
-	_,err := rand.Read(key)
+	_, err := rand.Read(key)
 	return key, err
 }
 
@@ -27,18 +26,18 @@ func RandomInt(min, max int) int {
 		// The RNG must have failed
 		log.Fatal(err)
 	}
-	c := int(r.Int64())+min
+	c := int(r.Int64()) + min
 	return c
 }
 
 // RandomPad returns a byte slice padded at both ends with a random number of
 // bytes picked between min and max each time.
-func RandomPad(src []byte, min,max int) []byte {
-	before, err := RandomBytes(RandomInt(min,max))
+func RandomPad(src []byte, min, max int) []byte {
+	before, err := RandomBytes(RandomInt(min, max))
 	if err != nil {
 		log.Fatal(err)
 	}
-	after, err := RandomBytes(RandomInt(min,max))
+	after, err := RandomBytes(RandomInt(min, max))
 	if err != nil {
 		log.Fatal(err)
 	}

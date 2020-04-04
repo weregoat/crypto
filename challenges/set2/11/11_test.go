@@ -11,7 +11,7 @@ import (
 func TestChallenge(t *testing.T) {
 	blockSize := aes.BlockSize
 	// Chosen plaintext 4x16 should guarantee a repeated block
-	pSize := 4*blockSize
+	pSize := 4 * blockSize
 	plainText := bytes.Repeat([]byte{'A'}, pSize)
 	for i := 0; i < 50; i++ {
 		o := oracle.New(blockSize)
@@ -20,7 +20,7 @@ func TestChallenge(t *testing.T) {
 			t.Error(err)
 		}
 		blocks := util.Split(o.CipherText, o.BlockSize)
-		for _,block := range blocks {
+		for _, block := range blocks {
 			t.Logf("%q", util.EncodeToBase64(block))
 		}
 		isECB := util.HasRepeatingBlocks(o.CipherText, o.BlockSize)
@@ -41,7 +41,7 @@ func TestChallenge(t *testing.T) {
 		if isECB && o.Mode != oracle.ModeECB {
 			t.Errorf("expecting ECB mode, but failed to detect it")
 		}
-		if ! isECB && o.Mode != oracle.ModeCBC {
+		if !isECB && o.Mode != oracle.ModeCBC {
 			t.Errorf("expecting not ECB mode, but is not CBC")
 		}
 	}
