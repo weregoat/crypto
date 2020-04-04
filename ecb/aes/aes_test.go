@@ -24,7 +24,6 @@ func TestDecryptAES128(t *testing.T) {
 		var cipherText = make([]byte, len(padded))
 		i := 0
 		for {
-			t.Logf("%q", cipherText)
 			s := i * aes.BlockSize
 			if s >= len(padded) {
 				break

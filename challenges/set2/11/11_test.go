@@ -19,16 +19,17 @@ func TestChallenge(t *testing.T) {
 			t.Error(err)
 		}
 		blocks := util.Split(o.CipherText, o.BlockSize)
-		for _, block := range blocks {
-			t.Logf("% x", block)
+		for j, block := range blocks {
+			t.Logf("block %d: %x", j, block)
 		}
 		isECB := util.HasRepeatingBlocks(o.CipherText, o.BlockSize)
 		switch isECB {
 		case true:
-			t.Log("ECB mode")
+			t.Log("predicting ECB mode")
 		case false:
-			t.Log("CBC mode")
+			t.Log("predicting not ECB mode")
 		}
+		t.Logf("oracle tells mode was: %s", o.Mode)
 		if len(o.CipherText)%blockSize != 0 {
 			t.Errorf("cipherText is of the wrong size %d, it should be a multiple of %d", len(o.CipherText), blockSize)
 		}

@@ -41,12 +41,12 @@ tests:
 			t.Error(err)
 			break tests
 		}
-		t.Logf("Mode: %s", o.Mode)
+		//t.Logf("Mode: %s", o.Mode)
 		switch o.Mode {
 		case ModeCBC:
 			cipherText, err := cbc.Encrypt(o.PlainText, o.Key, o.IV)
-			t.Logf("Expected ciphertext: % x", cipherText)
-			t.Logf("Oracle ciphertext: % x", o.CipherText)
+			//t.Logf("Expected ciphertext: % x", cipherText)
+			//t.Logf("Oracle ciphertext: % x", o.CipherText)
 			if err != nil {
 				t.Error(err)
 				break tests
@@ -56,8 +56,8 @@ tests:
 				break tests
 			}
 			plainText, err := cbc.Decrypt(o.CipherText, o.Key, o.IV)
-			t.Logf("Expected plaintext: % x", plainText)
-			t.Logf("Oracle plaintext: % x", o.PlainText)
+			//t.Logf("Expected plaintext: % x", plainText)
+			//t.Logf("Oracle plaintext: % x", o.PlainText)
 			if err != nil {
 				t.Error(err)
 				break tests
@@ -69,8 +69,8 @@ tests:
 
 		case ModeECB:
 			cipherText, err := ecb.Encrypt(o.PlainText, o.Key)
-			t.Logf("Expected ciphertext: % x", cipherText)
-			t.Logf("Oracle ciphertext: % x", o.CipherText)
+			//t.Logf("Expected ciphertext: % x", cipherText)
+			//t.Logf("Oracle ciphertext: % x", o.CipherText)
 			if err != nil {
 				t.Error(err)
 				break tests
@@ -80,8 +80,8 @@ tests:
 				break tests
 			}
 			plainText, err := ecb.Decrypt(o.CipherText, o.Key)
-			t.Logf("Expected plaintext: % x", plainText)
-			t.Logf("Oracle plaintext: % x", o.PlainText)
+			//t.Logf("Expected plaintext: % x", plainText)
+			//t.Logf("Oracle plaintext: % x", o.PlainText)
 			if err != nil {
 				t.Error(err)
 				break tests
