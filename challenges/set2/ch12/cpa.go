@@ -1,11 +1,12 @@
 package ch12
 
-/*
-func main() {
-	secret := "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"
-}
-*/
+import (
+	"bytes"
+	"gitlab.com/weregoat/crypto/util"
+)
 
+// GuessBlockSize tries to guess the cipher blocksize by adding a byte at a time
+// to the plaintext until the oracle returns a ciphertext with an extra block.
 func GuessBlockSize(oracle Oracle) int {
 	plainText := make([]byte, 0)
 	// This is the original length of the ciphertext
@@ -22,4 +23,12 @@ func GuessBlockSize(oracle Oracle) int {
 		}
 
 	}
+}
+
+// IsECB tries to verify that the encryption mode is ECB by detecting block
+// repetitions.
+func IsECB(oracle Oracle, blockSize int) bool {
+	chosenPlaintext := bytes.Repeat([]byte{'A'}, blockSize*4) // We determined earlier than 4 is a good enough number
+	cipherText := oracle.Encrypt(chosenPlaintext)
+	return util.HasRepeatingBlocks(cipherText, blockSize)
 }

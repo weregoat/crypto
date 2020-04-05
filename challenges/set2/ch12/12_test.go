@@ -13,7 +13,19 @@ func TestGuessBlockSize(t *testing.T) {
 		t.Error(err)
 	}
 	blockSize := GuessBlockSize(oracle)
-	if blockSize != 16 {
+	if blockSize != aes.BlockSize {
 		t.Errorf("expecting blocksize of %d, got %d", aes.BlockSize, blockSize)
+	}
+}
+
+func TestIsECB(t *testing.T) {
+	oracle, err := New(secret)
+	if err != nil {
+		t.Error(err)
+	}
+	blockSize := GuessBlockSize(oracle)
+	// We know is ECB
+	if !IsECB(oracle, blockSize) {
+		t.Errorf("the function should have detected that is ECB, but didn't")
 	}
 }
