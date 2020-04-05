@@ -1,4 +1,4 @@
-package main
+package ch9
 
 import (
 	"gitlab.com/weregoat/crypto/pkcs7"

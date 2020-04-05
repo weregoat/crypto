@@ -1,4 +1,4 @@
-package main
+package ch6
 
 import (
 	"encoding/base64"

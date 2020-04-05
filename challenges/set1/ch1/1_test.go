@@ -1,4 +1,4 @@
-package main
+package ch1
 
 import (
 	"encoding/hex"
