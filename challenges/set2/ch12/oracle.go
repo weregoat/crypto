@@ -1,66 +1,40 @@
-package main
+package ch12
 
 import (
-	cbc "gitlab.com/weregoat/crypto/cbc/aes"
+	"encoding/base64"
 	ecb "gitlab.com/weregoat/crypto/ecb/aes"
 	"gitlab.com/weregoat/crypto/util"
-	"math/rand"
-	"time"
 )
 
-const ModeCBC = "CBC"
-const ModeECB = "ECB"
-
 type Oracle struct {
-	BlockSize  int
-	Key        []byte
-	CipherText []byte
-	PlainText  []byte
-	IV         []byte
-	Mode       string
-	Error      error
+	key       []byte
+	Error     error
+	plainText []byte
 }
 
-func New(blockSize int) Oracle {
-	if blockSize < 0 {
-		blockSize = 0
-	}
-	return Oracle{BlockSize: blockSize}
-}
-
-func (o *Oracle) Encrypt(plainText []byte) error {
-	key, err := util.RandomBytes(o.BlockSize)
+func New(secret string) (Oracle, error) {
+	o := Oracle{}
+	key, err := util.RandomBytes(ecb.BlockSize)
 	if err != nil {
 		o.Error = err
-		return err
+		return o, err
 	}
-	o.Key = key
-	o.PlainText = util.RandomPad(plainText, 5, 10)
-	rand.Seed(time.Now().UnixNano())
-	mode := rand.Intn(2)
-	switch mode {
-	case 0:
-		iv, err := util.RandomBytes(16)
-		if err != nil {
-			o.Error = err
-			return err
-		}
-		cipherText, err := cbc.Encrypt(o.PlainText, key, iv)
-		if err != nil {
-			o.Error = err
-			return err
-		}
-		o.IV = iv
-		o.CipherText = cipherText
-		o.Mode = ModeCBC
-	case 1:
-		cipherText, err := ecb.Encrypt(o.PlainText, key)
-		if err != nil {
-			o.Error = err
-			return err
-		}
-		o.CipherText = cipherText
-		o.Mode = ModeECB
+	plainText, err := base64.StdEncoding.DecodeString(secret)
+	if err != nil {
+		o.Error = err
+		return o, err
 	}
-	return nil
+	o.key = key
+	o.plainText = plainText
+	return o, nil
+}
+
+func (o *Oracle) Encrypt(chosenPlainText []byte) []byte {
+	var err error
+	o.plainText = append(chosenPlainText, o.plainText...)
+	cipherText, err := ecb.Encrypt(o.plainText, o.key)
+	if err != nil {
+		o.Error = err
+	}
+	return cipherText
 }
