@@ -38,11 +38,11 @@ func TestChallenge(t *testing.T) {
 			t.Errorf("no random bytes were added to the plaintext, the encrypting function must be broken")
 		}
 
-		if isECB && o.Mode != _2.ModeECB {
+		if isECB && o.Mode != ModeECB {
 			t.Log(o.Mode)
 			t.Errorf("expecting ECB mode, but failed to detect it")
 		}
-		if !isECB && o.Mode != _2.ModeCBC {
+		if !isECB && o.Mode != ModeCBC {
 			t.Log(o.Mode)
 			t.Errorf("expecting not ECB mode, but is not CBC")
 		}
