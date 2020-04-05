@@ -47,6 +47,9 @@ func RemovePadding(src []byte) []byte {
 
 // Split splits a byte slice into n byte slices of _blockSize_.
 func Split(src []byte, blockSize int) [][]byte {
+	if len(src)%blockSize != 0 {
+		src = Pad(src, blockSize)
+	}
 	var blocks [][]byte
 	i := 0
 	for {
@@ -58,12 +61,7 @@ func Split(src []byte, blockSize int) [][]byte {
 		if end > len(src) {
 			end = len(src)
 		}
-		// Padding
-		block := src[begin:end]
-		if len(block)%blockSize != 0 {
-			block = Pad(block, blockSize)
-		}
-		blocks = append(blocks, block)
+		blocks = append(blocks, src[begin:end])
 		i++
 	}
 	return blocks
