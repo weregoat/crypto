@@ -26,19 +26,19 @@ func Encrypt(plainText, key, iv []byte) ([]byte, error) {
 	// By using copies we make sure we don't mess with original slices
 	// It's, probably, slower than manipulating the slices directly, but
 	// I find it much clearer to show how CBC works.
-	for _,block := range blocks {
+	for _, block := range blocks {
 		// Copy each block so we can manipulate it
 		src := make([]byte, BlockSize)
-		copy(src,block)
+		copy(src, block)
 		// XOR the block with the IV
-		xor, err := util.FixedXORBytes(src, IV)
+		xor(src, IV)
 		if err != nil {
 			return cipherText, err
 		}
 		// Create an empty block for the plaintext
 		dst := make([]byte, BlockSize)
 		// Encrypt the XOR block into the plaintext block
-		cipher.Encrypt(dst, xor)
+		cipher.Encrypt(dst, src)
 		cipherText = append(cipherText, dst...)
 		copy(IV, dst)
 	}
@@ -66,7 +66,7 @@ func Decrypt(cipherText, key, iv []byte) ([]byte, error) {
 	// using this for
 	blocks := util.Split(cipherText, BlockSize)
 	// Go through each block and decipher it.
-	for _,block := range blocks {
+	for _, block := range blocks {
 		// Copy the block, so we don't change it
 		src := make([]byte, BlockSize)
 		copy(src, block)
@@ -75,15 +75,22 @@ func Decrypt(cipherText, key, iv []byte) ([]byte, error) {
 		// Decrypt the block of ciphertext
 		cipher.Decrypt(dst, src)
 		// XOR the decrypted block with the IV
-		xor, err := util.FixedXORBytes(dst, IV)
+		xor(dst, IV)
 		if err != nil {
 			return plainText, err
 		}
 		// Add the resulting block to the plaintext
-		plainText = append(plainText, xor...)
+		plainText = append(plainText, dst...)
 		// Update the IV with the original cipher block
 		copy(IV, src)
 	}
 	// Remove the padding before returning
 	return pkcs7.RemovePadding(plainText), nil
+}
+
+// XOR function to be used internally
+func xor(dst, src []byte) {
+	for i := 0; i < len(dst); i++ {
+		dst[i] = dst[i] ^ src[i]
+	}
 }
