@@ -32,3 +32,14 @@ func IsECB(oracle Oracle, blockSize int) bool {
 	cipherText := oracle.Encrypt(chosenPlaintext)
 	return util.HasRepeatingBlocks(cipherText, blockSize)
 }
+
+func LookupTable(oracle Oracle, knownPlaintext []byte, begin, end int) map[string]byte {
+	var table = make(map[string]byte) // using a string for key will make lookup simpler
+	for i:=0; i <= 255; i++ {
+		chosenPlaintext := knownPlaintext[:15]
+		chosenPlaintext = append(chosenPlaintext, byte(i))
+		cipherText := oracle.Encrypt(chosenPlaintext)
+		table[string(cipherText[begin:end])] = byte(i)
+	}
+	return table
+}

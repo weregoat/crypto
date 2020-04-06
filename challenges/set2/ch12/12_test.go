@@ -2,6 +2,7 @@ package ch12
 
 import (
 	"gitlab.com/weregoat/crypto/cbc/aes"
+	"gitlab.com/weregoat/crypto/util"
 	"testing"
 )
 
@@ -27,5 +28,23 @@ func TestIsECB(t *testing.T) {
 	// We know is ECB
 	if !IsECB(oracle, blockSize) {
 		t.Errorf("the function should have detected that is ECB, but didn't")
+	}
+}
+
+func TestLookupTable(t *testing.T) {
+	oracle, err := New(secret)
+	if err != nil {
+		t.Error(err)
+	}
+	knownText := []byte("AAAAAAAAAAAAAAA")
+	table := LookupTable(oracle, knownText, 0, 16)
+	if len(table) != 256 {
+		t.Errorf("lookup table has too few elements %d", len(table))
+	}
+	aByte := byte(util.RandomInt(0,256))
+	knownText = append(knownText, aByte)
+	cipherText := string(oracle.Encrypt(knownText)[0:16])
+	if table[cipherText] != aByte {
+		t.Errorf("table lookup for byte %x failed", aByte)
 	}
 }
