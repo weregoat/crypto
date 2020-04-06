@@ -1,6 +1,8 @@
 package ch12
 
 import (
+	"bytes"
+	"encoding/base64"
 	"gitlab.com/weregoat/crypto/cbc/aes"
 	"gitlab.com/weregoat/crypto/util"
 	"testing"
@@ -37,7 +39,7 @@ func TestLookupTable(t *testing.T) {
 		t.Error(err)
 	}
 	knownText := []byte("AAAAAAAAAAAAAAA")
-	table := LookupTable(oracle, knownText, 0, 16)
+	table := LookupTable(oracle, knownText,  16)
 	if len(table) != 256 {
 		t.Errorf("lookup table has too few elements %d", len(table))
 	}
@@ -46,5 +48,18 @@ func TestLookupTable(t *testing.T) {
 	cipherText := string(oracle.Encrypt(knownText)[0:16])
 	if table[cipherText] != aByte {
 		t.Errorf("table lookup for byte %x failed", aByte)
+	}
+}
+
+
+func TestCPA(t *testing.T) {
+	oracle, err := New(secret)
+	if err != nil {
+		t.Error(err)
+	}
+	plainText := CPA(oracle)
+	solution, _ := base64.StdEncoding.DecodeString(secret)
+	if ! bytes.Equal(plainText, solution) {
+		t.Errorf("expecting %+q, got %+q", solution, plainText)
 	}
 }
