@@ -31,8 +31,8 @@ func New(secret string) (Oracle, error) {
 
 func (o *Oracle) Encrypt(chosenPlainText []byte) []byte {
 	var err error
-	o.plainText = append(chosenPlainText, o.plainText...)
-	cipherText, err := ecb.Encrypt(o.plainText, o.key)
+	plainText := append(chosenPlainText, o.plainText...)
+	cipherText, err := ecb.Encrypt(plainText, o.key)
 	if err != nil {
 		o.Error = err
 	}
