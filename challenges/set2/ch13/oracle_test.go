@@ -1,6 +1,8 @@
 package ch13
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestParse(t *testing.T) {
 	tests := map[string]map[string]string{
@@ -54,6 +56,23 @@ func TestOracle(t *testing.T) {
 		}
 		if i != v {
 			t.Errorf("expecting value %+q for key %+q, got %+q", v,k,i)
+		}
+	}
+}
+
+func TestAttack(t *testing.T) {
+	blockSize := 16
+	var targets = []string{"admin", "super", "superuser", "master", "root"} // We want admin roles
+	o, err := New()
+	if err != nil {
+		t.Error(err)
+	}
+	for _,target := range targets {
+		cipherText := CraftCiphertext(o, target, blockSize)
+		data := o.Decrypt(string(cipherText))
+		role := data["role"]
+		if role != target {
+			t.Errorf("expecting role to be %+q, got %+q", target, role)
 		}
 	}
 }

@@ -30,6 +30,7 @@ func New() (Oracle, error) {
 
 func (o Oracle) Encrypt(email string) []byte {
 	data := encode(email)
+	fmt.Printf("%+q\n", data)
 	cipherText, err := ecb.Encrypt([]byte(data), o.key)
 	if err != nil {
 		o.Error = err
@@ -42,6 +43,7 @@ func (o Oracle) Decrypt(src string) map[string]string {
 	if err != nil {
 		o.Error = err
 	}
+	fmt.Printf("%+q\n", data)
 	return parse(string(data))
 }
 
