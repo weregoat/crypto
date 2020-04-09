@@ -56,3 +56,8 @@ Another thought: this attack assume we know a lot about the encrypted string. We
 I suppose that you can get to this kind of information in many ways, but it also occurred to me that, possibly, you get them by trying a lot of plausible combinations.
 
 Which reminds me that article I read a long time ago about that one of the best defence against password attacks was to limit the number of allowed tries (or slow them down a lot); I think it was from Microsoft people.
+
+It now, a few days afterwards, that part of the assumption of this attack can be solved through #14, where we can guess the length (6 bytes) of the prefix as in #14 and decipher the postfix ("uid=10&role=user") through (#12 and #14; #14 is an expanded version of #12, but to show that is all connected).
+Possibly uid would make it somewhat harder, but once you get "uid=N" it's easy to counterbalance it.
+
+The order of the challenges is a bit askew, but maybe they did it on purpose not to make it too obvious; dunno. Kudos, though, well done.
