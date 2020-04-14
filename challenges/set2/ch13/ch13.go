@@ -1,7 +1,6 @@
 package ch13
 
 import (
-	"fmt"
 	"gitlab.com/weregoat/crypto/pkcs7"
 	"log"
 )
@@ -15,7 +14,7 @@ and the accepted input (i.e. no "=" or "&").
 /* First we get the length the email address should be to have "user" in the last block"
 	We cannot use "role=user" because we know the email can't have "=" or "&" in it.
 We assume the structure is email=[our input]somethingsomething=user
-So, we pass longer and longer mails until we get an extra block (which should be encoding "r"+padding) and we add 3 bytes ("use").
+So, we pass longer and longer mails until we get an extra block (which should be encoding "r"+padding) and we add 4 bytes ("user").
 It's true that we are assuming the somethingsomething remains constant, but it's quite easy to adapt to a scenario where
 the uid increases.
 */
@@ -23,22 +22,20 @@ the uid increases.
 func GetEmailSuffix(o Oracle, email string, blockSize int) []byte {
 	e := []byte(email)
 	baselen := len(o.Encrypt(email))
-	fmt.Println(baselen)
 	for i:=0; i <= blockSize; i++ { // If we had to add more than 16 bytes, we got the block wrong
 		cipherLen := len(o.Encrypt(string(e)))
 		if cipherLen > baselen {
-			fmt.Println(cipherLen)
 			break
 		}
 		e = append([]byte{'a'}, e...)
 	}
-	// Remember we need 3 more bytes
-	e = append([]byte("eee"), e...)
+	// Remember we need 3 more bytes (user)
+	e = append([]byte("eeee"), e...)
 	return e
 }
 
 func CraftCiphertext(o Oracle, target string, blocksize int) []byte {
-	if len(target) > blocksize {
+	if len(target) >= blocksize {
 		log.Fatal("code only works with admin roles shorter than 16 bytes")
 	} // Code only works with one block of ciphertext (it can be expanded, of course)
 	// Get the email we need to have the "user" encrypted in the last block

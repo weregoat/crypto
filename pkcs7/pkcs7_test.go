@@ -32,17 +32,27 @@ func TestRemovePadding(t *testing.T) {
 	tests := []struct {
 		Src      string
 		Expected string
+		Error    bool
 	}{
-		{"Padded\x02\x02", "Padded"},
-		{"Padded\x01", "Padded"}, // Tricky, could be wrong
-		{"\x01", ""},             // Empty string with one byte of padding
-		{"\x02\x02", ""},         // Empty string with two bytes of padding
-		{"Not really\x03\x03", "Not really\x03\x03"},
-		{"This is not\x02\x02 padded either\x01\x02", "This is not\x02\x02 padded either\x01\x02"},
-		{"Padded\x06\x06\x06\x06\x06\x06", "Padded"}, // Same as first, but bigger block
+		{"Padded\x02\x02", "Padded", false},
+		{"Padded\x01", "Padded", false }, // Tricky, could be wrong
+		{"\x01", "",false},             // Empty string with one byte of padding
+		{"\x02\x02", "", false},         // Empty string with two bytes of padding
+		{"Not really\x03\x03", "Not really\x03\x03",true},
+		{"This is not\x02\x02 padded either\x01\x02", "This is not\x02\x02 padded either\x01\x02", false},
+		{"Padded\x06\x06\x06\x06\x06\x06", "Padded", false}, // Same as first, but bigger block
+		{"ICE ICE BABY\x04\x04\x04\x04", "ICE ICE BABY", false},
+		{"ICE ICE BABY\x05\x05\x05\x05", "ICE ICE BABY\x05\x05\x05\x05", true},
+		{"ICE ICE BABY\x01\x02\x03\x04", "ICE ICE BABY\x01\x02\x03\x04", true},
+		{"ICE ICE BABY\x18", "ICE ICE BABY\x18", true},
 	}
 	for _, test := range tests {
-		s := RemovePadding([]byte(test.Src))
+		t.Logf("Src: %+q\n", test.Src)
+		s, err := RemovePadding([]byte(test.Src))
+		t.Logf("Dst: %+q\n", s)
+		if test.Error && err == nil {
+			t.Error("expecting error, but got nothing")
+		}
 		if string(s) != test.Expected {
 			t.Errorf("expecting %q, got %q", test.Expected, s)
 		}

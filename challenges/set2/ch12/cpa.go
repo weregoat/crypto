@@ -87,5 +87,6 @@ func CPA(oracle Oracle) []byte {
 			// Not covering that at the moment, will fix.
 		}
 	}
-	return pkcs7.RemovePadding(plainText)
+	plainText, _ = pkcs7.RemovePadding(plainText)
+	return plainText
 }

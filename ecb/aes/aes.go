@@ -25,13 +25,11 @@ func Decrypt(cipherText, key []byte) (plainText []byte, err error) {
 		be := bs + BlockSize
 		cipher.Decrypt(plainText[bs:be], cipherText[bs:be])
 	}
-	return pkcs7.RemovePadding(plainText), err
+	return pkcs7.RemovePadding(plainText)
 }
 
 func Encrypt(plaintext, key []byte) (cipherText []byte, err error) {
-	if len(plaintext)%aes.BlockSize != 0 {
-		plaintext = pkcs7.Pad(plaintext, BlockSize)
-	}
+	plaintext = pkcs7.Pad(plaintext, BlockSize)
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
 		return cipherText, err
