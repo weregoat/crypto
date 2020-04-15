@@ -48,11 +48,8 @@ func TestRemovePadding(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Logf("Src: %+q\n", test.Src)
-		s, err := RemovePadding([]byte(test.Src))
+		s := RemovePadding([]byte(test.Src))
 		t.Logf("Dst: %+q\n", s)
-		if test.Error && err == nil {
-			t.Error("expecting error, but got nothing")
-		}
 		if string(s) != test.Expected {
 			t.Errorf("expecting %q, got %q", test.Expected, s)
 		}

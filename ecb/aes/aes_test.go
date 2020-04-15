@@ -15,12 +15,20 @@ func TestDecryptAES128(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	for j := 0; j < 50; j++ {
+	for j := 0; j < 5000; j++ {
 		plainText, err := util.RandomBytes(util.RandomInt(0, 64))
 		if err != nil {
 			t.Error(err)
 		}
-		padded := pkcs7.Pad(plainText, aes.BlockSize)
+		if pkcs7.IsPadded(plainText) {
+			plainText = append(plainText, 'Z')
+		}
+		padded := make([]byte, len(plainText))
+		if len(plainText)%aes.BlockSize != 0 {
+			padded = pkcs7.Pad(plainText, aes.BlockSize)
+		} else {
+			copy(padded, plainText)
+		}
 		var cipherText = make([]byte, len(padded))
 		i := 0
 		for {
@@ -45,11 +53,12 @@ func TestDecryptAES128(t *testing.T) {
 		if err == nil {
 			t.Errorf("expecting error because of short key, but got nothing")
 		}
-
-		shortText := cipherText[:12]
-		_, err = Decrypt(shortText, key)
-		if err == nil {
-			t.Errorf("expecting error because of short cipherText, but got nothing")
+		if len(plainText) > 0 {
+			shortText := cipherText[:12]
+			_, err = Decrypt(shortText, key)
+			if err == nil {
+				t.Errorf("expecting error because of short cipherText, but got nothing")
+			}
 		}
 	}
 }
@@ -156,9 +165,7 @@ func TestAES128(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		// The test vectors are about blocks, padding is not considered, while
-		// the function has pkcs#7 padding.
-		if !bytes.Equal(encrypt[0:16], cipherText) {
+		if !bytes.Equal(encrypt, cipherText) {
 			t.Errorf("expecting cipherText to be %q, got %q", cipherText, encrypt)
 		}
 		decrypt, err := Decrypt(cipherText, key)

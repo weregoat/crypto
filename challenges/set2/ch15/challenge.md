@@ -22,3 +22,6 @@ If you are writing in a language with exceptions, like Python or Ruby, make your
 Crypto nerds know where we're going with this. Bear with us.
 
 ## Goat notes
+I am not sure I like the error part. I find it too harsh, in encryption/decryption cases. If the text was not padded properly, or with PKCS#7, I can still decrypt it and figure out the garbage at the end later.
+
+I think I will prefer a separate, specific function that check if the plaintext is padded or not according to PKCS#7.

@@ -13,9 +13,7 @@ type Oracle struct {
 	plainText []byte
 }
 
-type User struct {
-
-}
+var debug = false
 
 func New() (Oracle, error) {
 	o := Oracle{}
@@ -30,7 +28,9 @@ func New() (Oracle, error) {
 
 func (o Oracle) Encrypt(email string) []byte {
 	data := encode(email)
-	//fmt.Printf("%+q\n", data)
+	if debug {
+		fmt.Printf("oracle got: %+q\n", data)
+	}
 	cipherText, err := ecb.Encrypt([]byte(data), o.key)
 	if err != nil {
 		o.Error = err
@@ -43,7 +43,9 @@ func (o Oracle) Decrypt(src string) map[string]string {
 	if err != nil {
 		o.Error = err
 	}
-	//fmt.Printf("%+q\n", data)
+	if debug {
+		fmt.Printf("oracle returns: %+q\n", data)
+	}
 	return parse(string(data))
 }
 

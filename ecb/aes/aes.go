@@ -25,19 +25,32 @@ func Decrypt(cipherText, key []byte) (plainText []byte, err error) {
 		be := bs + BlockSize
 		cipher.Decrypt(plainText[bs:be], cipherText[bs:be])
 	}
-	return pkcs7.RemovePadding(plainText)
+	return pkcs7.RemovePadding(plainText),nil
 }
 
-func Encrypt(plaintext, key []byte) (cipherText []byte, err error) {
-	plaintext = pkcs7.Pad(plaintext, BlockSize)
+func Encrypt(src, key []byte) (cipherText []byte, err error) {
+	var plaintext []byte
+	// Only pad the plaintext if size not a multiple of the blocksize
+	if len(src)%BlockSize != 0 {
+		plaintext = pkcs7.Pad(src, BlockSize)
+	} else {
+		plaintext = make([]byte, len(src))
+		copy(plaintext, src)
+	}
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
 		return cipherText, err
 	}
 	cipherText = make([]byte, len(plaintext))
-	for bs := 0; bs < len(plaintext); bs = bs + BlockSize {
-		be := bs + BlockSize
+	i := 0
+	for {
+		bs := i*BlockSize
+		be := (i+1)*BlockSize
+		if be > len(plaintext) {
+			break
+		}
 		cipher.Encrypt(cipherText[bs:be], plaintext[bs:be])
+		i++
 	}
 	return cipherText, err
 }

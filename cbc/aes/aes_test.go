@@ -123,9 +123,7 @@ func TestAES128(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		// The vectors are to verify AES blocks. The encrypt function adds PKCS#7
-		// padding, which may result in an extra ciphertext block.
-		if !bytes.Equal(encrypt[0:16], cipherText) {
+		if !bytes.Equal(encrypt, cipherText) {
 			t.Errorf("expecting cipherText to be % x, got % x",
 				cipherText,
 				encrypt,

@@ -13,7 +13,7 @@ const secret = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFp
 
 func TestGetSameBlockStart(t *testing.T) {
 	blockSize := ecb.BlockSize // AES
-	for i:=0; i < 20; i++ {
+	for i:=0; i < 2000; i++ {
 		key, err := util.RandomBytes(blockSize)
 		if err != nil {
 			t.Error(err)
@@ -33,9 +33,11 @@ func TestGetSameBlockStart(t *testing.T) {
 		plaintext := append(prefix, bytes.Repeat(same, 2)...)
 		plaintext = append(plaintext, postfix...)
 		cipherText, err := ecb.Encrypt(plaintext, key)
+		/*
 		for _,j := range util.Split(cipherText, blockSize) {
 			t.Logf("%x\n", j)
 		}
+		 */
 		expected := len(prefix)
 		start := GetSameBlockStart(cipherText, blockSize)
 		if expected != start {
@@ -45,7 +47,7 @@ func TestGetSameBlockStart(t *testing.T) {
 }
 
 func TestGetPrefixLength(t *testing.T) {
-	for i:=0; i < 20; i++ {
+	for i:=0; i < 20000; i++ {
 		plainText, err := util.RandomBytes(util.RandomInt(0,4*16))
 		if err != nil {
 			t.Error(err)
@@ -56,10 +58,12 @@ func TestGetPrefixLength(t *testing.T) {
 		}
 		prefixLength := GetPrefixLength(o)
 		if prefixLength != len(o.Prefix) {
+			t.Logf("oracle prefix: % x\n", o.Prefix)
 			t.Errorf("expecting prefix length to be %d, got %d", len(o.Prefix), prefixLength)
 		}
 	}
 }
+
 
 func TestCPA(t *testing.T) {
 	oracle, err := New(secret)
@@ -88,3 +92,4 @@ func TestCh13Secret(t *testing.T) {
 		t.Errorf("expecting %+q, got %+q", solution, plainText)
 	}
 }
+

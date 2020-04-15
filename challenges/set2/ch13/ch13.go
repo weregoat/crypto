@@ -14,7 +14,7 @@ and the accepted input (i.e. no "=" or "&").
 /* First we get the length the email address should be to have "user" in the last block"
 	We cannot use "role=user" because we know the email can't have "=" or "&" in it.
 We assume the structure is email=[our input]somethingsomething=user
-So, we pass longer and longer mails until we get an extra block (which should be encoding "r"+padding) and we add 4 bytes ("user").
+So, we pass longer and longer mails until we get an extra block (which should be encoding "r"+padding) and we add 3 bytes ("use").
 It's true that we are assuming the somethingsomething remains constant, but it's quite easy to adapt to a scenario where
 the uid increases.
 */
@@ -29,8 +29,8 @@ func GetEmailSuffix(o Oracle, email string, blockSize int) []byte {
 		}
 		e = append([]byte{'a'}, e...)
 	}
-	// Remember we need 3 more bytes (user)
-	e = append([]byte("eeee"), e...)
+	// Remember we need 3 more bytes (we have "r", we add "use")
+	e = append([]byte("eee"), e...)
 	return e
 }
 

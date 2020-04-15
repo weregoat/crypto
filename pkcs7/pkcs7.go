@@ -2,14 +2,12 @@ package pkcs7
 
 import (
 	"bytes"
-	"fmt"
 )
 
-type NotPKCSError struct {
-
-}
 
 /*
+RFC 2315
+[...]
    2.   Some content-encryption algorithms assume the
         input length is a multiple of k octets, where k > 1, and
         let the application define a method for handling inputs
@@ -31,51 +29,82 @@ type NotPKCSError struct {
         padded and no padding string is a suffix of another. This
         padding method is well-defined if and only if k < 256;
         methods for larger k are an open issue for further study.
+[...]
  */
 
 // Pad returns a slice of bytes from src with PKCS#7 padding at the end.
-func Pad(src []byte, size int) []byte {
-	padded := src
-	// No padding
-	if size <= 0 {
-		return src
+func Pad(src []byte, k int) []byte {
+	// Always copy slice so we always return a copy regardless of padding or
+	dst := make([]byte, len(src))
+	copy(dst, src)
+	// Invalid block size
+	if k <= 0 {
+		return dst
 	}
-	rest := len(padded) % size
-	paddingLength := size - rest
-	value := byte(paddingLength)
-	padding := bytes.Repeat([]byte{value}, paddingLength)
-	return append(padded, padding...)
+	l := len(dst)
+	n := k - (l % k)
+	value := byte(n)
+	padding := bytes.Repeat([]byte{value}, n)
+	return append(dst, padding...)
 }
 
 // RemovePadding removes the PKCS#7 padding from a slice of bytes.
-func RemovePadding(src []byte) ([]byte, error) {
-	// By default the last byte position is the end of the slice
-	last := len(src) - 1
-	// A slice smaller than 1 makes little sense
-	if last < 0 {
-		return src, nil
+func RemovePadding(src []byte) []byte {
+	// Something quite important, I think.
+	// I should **always** return a copy of the slice
+	// because that's what we do when we remove the padding.
+	var dst = make([]byte, len(src))
+	copy(dst, src)
+	start := paddingStart(dst)
+	if start >= 0 {
+		return dst[:start]
 	}
-	// Pick the last byte value, it should the the number of bytes of the padding
-	count := int(src[last])
-	// It cannot be padded if the slice length is less than the padding length
-	if len(src) < count {
-		err := fmt.Errorf("slice size %d is less than padding value %d", len(src), count)
-		return src, err
-	}
-	// If the text is padded is should start at len - endByte
-	padStart := len(src) - count
+	return dst
+}
 
-	// Pick count bytes from the end and they all should have count value
-	for i := padStart; i < len(src); i++ {
-		if int(src[i]) != count {
-			err := fmt.Errorf(
-				"invalid byte value position %d; expecting %d, but found %d",
-				i, count, int(src[i]),
-				)
-			return src, err
+// paddingStart returns the postion where the padding start. -1 if there is no
+// PKCS#7 padding.
+func paddingStart(src []byte) int {
+
+	// Because even if the original plaintext was empty, it should
+	// have, according to PKCS#7 rules a block of padding attached.
+	if len(src) == 0 {
+		return -1
+	}
+
+	// index of the last byte
+	i := len(src) - 1
+	// The value as integer (is really an uint, but int is easier to handle around)
+	n := int(src[i])
+	// The value is supposed to be the number of bytes of padding we should
+	// remove. It cannot be higher than the size of the slice (although it can
+	// be the same, if the plaintext is an empty string).
+	if n > len(src) {
+		return -1
+	}
+	// If the padding is correct, it should start here
+	start := len(src) - n
+	// Check every that each of the n-1 bytes in the slice has the same
+	// value as n (we already know the last one has n)
+	for j:=1; j < n; j++ {
+		b := int(src[i-j])
+		if b != n {
+			return -1
 		}
 	}
-	return src[:padStart], nil
+	return start
+}
+
+// IsPadded returns true if the plaintext is correctly padded according to
+// PKCS#7.
+func IsPadded(plainText []byte) bool {
+	// I don't want to go all ontological on this, but it seems to me that
+	// a padded string **needs** to have a point where the padding starts
+	// otherwise is not padded.
+	if paddingStart(plainText) > 0 {
+		return true
+	}
+	return false
 }
 
 // Split splits a byte slice into n byte slices of _blockSize_.

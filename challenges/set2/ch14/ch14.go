@@ -2,7 +2,6 @@ package ch14
 
 import (
 	"bytes"
-	"fmt"
 	ecb "gitlab.com/weregoat/crypto/ecb/aes"
 	"gitlab.com/weregoat/crypto/pkcs7"
 	"gitlab.com/weregoat/crypto/util"
@@ -12,39 +11,33 @@ import (
 var blockSize = ecb.BlockSize // We know this or we could get it
 var fillUp = []byte{'A'} // We use this for chosen text fill-ups
 
-func GetSameBlockStart(cipherText []byte, blockSize int) int {
+func GetSameBlockStart(src []byte, blockSize int) int {
+	cipherText := make([]byte, len(src))
+	copy(cipherText, src)
 	if len(cipherText)%blockSize != 0 {
-		return -1
+		log.Fatalf("ciphertext length %d not multiple of blocksize %d", len(cipherText), blockSize)
 	}
-	i := 0
-	for {
-		if (i+2)*blockSize > len(cipherText) {
-			break
-		}
-		b1 := cipherText[i*blockSize:(i+1)*blockSize]
-		b2 := cipherText[(i+1)*blockSize:(i+2)*blockSize]
-		if bytes.Equal(b1, b2) {
+	blocks := util.Split(cipherText, blockSize)
+	for i:=0; i < len(blocks)-1; i++ {
+		if bytes.Equal(blocks[i], blocks[i+1]) {
 			return i*blockSize
 		}
-		i++
 	}
 	return -1
 
 }
 
 func GetPrefixLength(o Oracle) int {
-	sameBlock, err := util.RandomBytes(blockSize)
-	if err != nil {
-		log.Fatal(err)
-	}
-	var prefix []byte
+	sameBlock := bytes.Repeat([]byte{'A'}, blockSize)
 	for i:=0; i < blockSize; i++ {
-		prefix = append(prefix, 'A')
+		prefix := bytes.Repeat([]byte{'B'}, i)
 		chosenText := append(prefix, bytes.Repeat(sameBlock, 2)...)
 		cipherText := o.Encrypt(chosenText)
 		position := GetSameBlockStart(cipherText, blockSize)
 		if position != -1 {
-			return len(cipherText[0:position])-len(prefix)
+			if verifyPrefix(o, i) == position {
+				return position - len(prefix)
+			}
 		}
 	}
 	return -1
@@ -119,14 +112,21 @@ func CPA(oracle Oracle) []byte {
 			// Not covering that at the moment, will fix.
 		}
 	}
-	plainText, _ = pkcs7.RemovePadding(plainText)
-	return plainText
+	return pkcs7.RemovePadding(plainText)
 }
 
 func cipherPrint(cipher []byte) {
 	blocks := util.Split(cipher, blockSize)
 	for _,block := range blocks {
-		fmt.Printf("%x\n", block)
+		log.Printf("%x", block)
 	}
-	fmt.Println("---")
+	log.Printf("---")
+}
+
+func verifyPrefix(o Oracle, i int) int {
+	sameBlock := bytes.Repeat([]byte{'C'}, blockSize)
+	prefix := bytes.Repeat([]byte{'D'}, i)
+	chosenText := append(prefix, bytes.Repeat(sameBlock, 2)...)
+	cipherText := o.Encrypt(chosenText)
+	return GetSameBlockStart(cipherText, blockSize)
 }

@@ -11,12 +11,17 @@ const BlockSize = aes.BlockSize
 
 // Encrypt returns a ciphertext encrypted with AES in CBC mode.
 func Encrypt(plainText, key, iv []byte) ([]byte, error) {
+	var blocks [][]byte
 	var cipherText []byte
 	// We need to make a copy of the IV because otherwise we'll change it
 	IV := make([]byte, len(iv))
 	copy(IV, iv)
 	// Pad, if needed, and split the plaintext into blocks
-	blocks := pkcs7.Split(plainText, BlockSize)
+	if len(plainText)%BlockSize != 0 {
+		blocks = pkcs7.Split(plainText, BlockSize)
+	} else {
+		blocks = util.Split(plainText, BlockSize)
+	}
 	// Initialise the AES cipher block
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
@@ -85,7 +90,7 @@ func Decrypt(cipherText, key, iv []byte) ([]byte, error) {
 		copy(IV, src)
 	}
 	// Remove the padding before returning
-	return pkcs7.RemovePadding(plainText)
+	return pkcs7.RemovePadding(plainText),nil
 }
 
 // XOR function to be used internally
