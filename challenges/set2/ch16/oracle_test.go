@@ -9,6 +9,7 @@ import (
 
 func TestOracle(t *testing.T) {
 	IWant := ";admin=true;"
+	for i:=0; i < 2000; i++ {
 		pre, err := util.RandomBytes(util.RandomInt(0, 10))
 		if err != nil {
 			t.Error(err)
@@ -50,5 +51,5 @@ func TestOracle(t *testing.T) {
 			t.Log("expecting the ciphertext to result in admin rights, but got nothing")
 			t.Fail()
 		}
-
+	}
 }
