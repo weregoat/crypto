@@ -25,7 +25,7 @@ func TestDecryptAES128(t *testing.T) {
 		 is padded according to PKCS#7 (e.g. multiple of 16 bytes and
 		 last byte \x01.
 		In this case I am adding a byte to break it.
-		 */
+		*/
 		if pkcs7.IsPadded(plainText) {
 			plainText = append(plainText, 'Z')
 		}

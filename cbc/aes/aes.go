@@ -90,7 +90,7 @@ func Decrypt(cipherText, key, iv []byte) ([]byte, error) {
 		copy(IV, src)
 	}
 	// Remove the padding before returning
-	return pkcs7.RemovePadding(plainText),nil
+	return pkcs7.RemovePadding(plainText), nil
 }
 
 // XOR function to be used internally

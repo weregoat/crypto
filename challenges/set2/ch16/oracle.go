@@ -15,18 +15,18 @@ const Admin = ";admin=true;"
 
 type Oracle struct {
 	Key []byte
-	IV []byte
+	IV  []byte
 }
 
-func New() (Oracle,error) {
+func New() (Oracle, error) {
 	o := Oracle{}
 	key, err := util.RandomBytes(cbc.BlockSize)
 	if err != nil {
-		return o,err
+		return o, err
 	}
 	iv, err := util.RandomBytes(cbc.BlockSize)
 	if err != nil {
-		return o,err
+		return o, err
 	}
 	o.Key = key
 	o.IV = iv
@@ -34,7 +34,7 @@ func New() (Oracle,error) {
 }
 
 func (o Oracle) Encrypt(src string) []byte {
-	input := strings.Join([]string{Prefix,strings.TrimSpace(strings.ToLower(src)),Postfix}, "")
+	input := strings.Join([]string{Prefix, strings.TrimSpace(strings.ToLower(src)), Postfix}, "")
 
 	plaintext := pkcs7.Pad([]byte(url.QueryEscape(input)), cbc.BlockSize)
 	ciphertext, err := cbc.Encrypt(plaintext, o.Key, o.IV)

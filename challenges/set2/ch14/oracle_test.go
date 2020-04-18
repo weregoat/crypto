@@ -34,7 +34,7 @@ func TestOracle_Encrypt(t *testing.T) {
 	if len(manualCipherText) != len(cipherText) {
 		t.Errorf("oracle and manual ciphertext lengths don't match %d <> %d", len(manualCipherText), len(cipherText))
 	}
-	for i:=0; i < len(cipherText); i++ {
+	for i := 0; i < len(cipherText); i++ {
 		if manualCipherText[i] != cipherText[i] {
 			t.Errorf("expecting byte %d of the ciphertext to be %x, but got %x", i, manualCipherText[i], cipherText[i])
 		}

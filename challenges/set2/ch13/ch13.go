@@ -9,7 +9,7 @@ import (
 	I am going to cheat a bit here.
 I assume I know already it's ECB, it's 16byte blocks, that the _role_ is at the end of the encoded string,
 and the accepted input (i.e. no "=" or "&").
- */
+*/
 
 /* First we get the length the email address should be to have "user" in the last block"
 	We cannot use "role=user" because we know the email can't have "=" or "&" in it.
@@ -22,7 +22,7 @@ the uid increases.
 func GetEmailSuffix(o Oracle, email string, blockSize int) []byte {
 	e := []byte(email)
 	baselen := len(o.Encrypt(email))
-	for i:=0; i <= blockSize; i++ { // If we had to add more than 16 bytes, we got the block wrong
+	for i := 0; i <= blockSize; i++ { // If we had to add more than 16 bytes, we got the block wrong
 		cipherLen := len(o.Encrypt(string(e)))
 		if cipherLen > baselen {
 			break
@@ -43,7 +43,7 @@ func CraftCiphertext(o Oracle, target string, blocksize int) []byte {
 	// Get the cipherText for this email
 	userCipher := o.Encrypt(string(email))
 	// Remove the last block where "user" is
-	noUser := userCipher[0:len(userCipher)-blocksize]
+	noUser := userCipher[0 : len(userCipher)-blocksize]
 	// "email=" is 6 bytes that the oracle add, so we need to
 	// insert the "admin" block where it will be on its own block
 	// i.e. after byte 10 (16-6)

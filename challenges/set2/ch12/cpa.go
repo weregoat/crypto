@@ -47,14 +47,14 @@ func LookupTable(oracle Oracle, knownPlaintext []byte, blockSize int) map[string
 func CPA(oracle Oracle) []byte {
 	var plainText []byte
 	blockSize := GuessBlockSize(oracle)
-	shortBlock := blockSize-1 // A whole block minus one byte
-	chosenByte := []byte{'A'} // It doesn't really matter
+	shortBlock := blockSize - 1 // A whole block minus one byte
+	chosenByte := []byte{'A'}   // It doesn't really matter
 	// How many blocks the plaintext has
 	cipherBlocks := len(util.Split(oracle.Encrypt([]byte{}), blockSize))
 	// For each of the blocks
 	for i := 0; i < cipherBlocks; i++ {
 		// One byte at a time
-		for j:=1; j <= blockSize; j++ {
+		for j := 1; j <= blockSize; j++ {
 			// The part of the plaintext we are using for the table
 			var knownPlainText = make([]byte, shortBlock)
 			// If we don't have blocksize worth of plaintext, we add what
@@ -65,7 +65,7 @@ func CPA(oracle Oracle) []byte {
 			} else {
 				// Otherwise just pick the last blocksize-1 bytes of the plaintext
 				// Remember this is for looking up in the table.
-				copy(knownPlainText,plainText[len(plainText)-shortBlock:])
+				copy(knownPlainText, plainText[len(plainText)-shortBlock:])
 			}
 			// Now we build a table of the ciphertexts from the known plaintext + every byte
 			table := LookupTable(oracle, knownPlainText, blockSize)
@@ -75,7 +75,7 @@ func CPA(oracle Oracle) []byte {
 			// We submit the chosen plaintext
 			cipherText := oracle.Encrypt(chosenPlainText)
 			// We need to select the right block of the ciphertext
-			cipherBlock := cipherText[i*blockSize:(i+1)*blockSize]
+			cipherBlock := cipherText[i*blockSize : (i+1)*blockSize]
 			// Lookup the cipherblock in the table
 			plainTextByte, ok := table[string(cipherBlock)]
 			// If we could find the ciphertext in the table
@@ -87,5 +87,5 @@ func CPA(oracle Oracle) []byte {
 			// Not covering that at the moment, will fix.
 		}
 	}
-	return  pkcs7.RemovePadding(plainText)
+	return pkcs7.RemovePadding(plainText)
 }

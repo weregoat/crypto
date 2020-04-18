@@ -7,9 +7,9 @@ import (
 )
 
 type Oracle struct {
-	Key       []byte
-	Prefix    []byte
-	Error     error
+	Key    []byte
+	Prefix []byte
+	Error  error
 	Secret []byte
 }
 
@@ -25,7 +25,7 @@ func New(secret string) (Oracle, error) {
 		o.Error = err
 		return o, err
 	}
-	length := util.RandomInt(0,48)
+	length := util.RandomInt(0, 48)
 	prefix, err := util.RandomBytes(length)
 	if err != nil {
 		o.Error = err

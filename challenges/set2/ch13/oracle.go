@@ -51,7 +51,7 @@ func (o Oracle) Decrypt(src string) map[string]string {
 
 func parse(src string) map[string]string {
 	var data = make(map[string]string)
-	for _,i := range strings.Split(src,"&") {
+	for _, i := range strings.Split(src, "&") {
 		parts := strings.Split(i, "=")
 		if len(parts) == 2 {
 			data[parts[0]] = parts[1]

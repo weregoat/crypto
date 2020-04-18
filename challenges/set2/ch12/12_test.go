@@ -39,18 +39,17 @@ func TestLookupTable(t *testing.T) {
 		t.Error(err)
 	}
 	knownText := []byte("AAAAAAAAAAAAAAA")
-	table := LookupTable(oracle, knownText,  16)
+	table := LookupTable(oracle, knownText, 16)
 	if len(table) != 256 {
 		t.Errorf("lookup table has too few elements %d", len(table))
 	}
-	aByte := byte(util.RandomInt(0,256))
+	aByte := byte(util.RandomInt(0, 256))
 	knownText = append(knownText, aByte)
 	cipherText := string(oracle.Encrypt(knownText)[0:16])
 	if table[cipherText] != aByte {
 		t.Errorf("table lookup for byte %x failed", aByte)
 	}
 }
-
 
 func TestCPA(t *testing.T) {
 	oracle, err := New(secret)
@@ -59,7 +58,7 @@ func TestCPA(t *testing.T) {
 	}
 	plainText := CPA(oracle)
 	solution, _ := base64.StdEncoding.DecodeString(secret)
-	if ! bytes.Equal(plainText, solution) {
+	if !bytes.Equal(plainText, solution) {
 		t.Errorf("expecting %+q, got %+q", solution, plainText)
 	}
 }

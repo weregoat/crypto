@@ -9,7 +9,7 @@ import (
 )
 
 var blockSize = ecb.BlockSize // We know this or we could get it
-var fillUp = []byte{'A'} // We use this for chosen text fill-ups
+var fillUp = []byte{'A'}      // We use this for chosen text fill-ups
 
 func GetSameBlockStart(src []byte, blockSize int) int {
 	cipherText := make([]byte, len(src))
@@ -18,9 +18,9 @@ func GetSameBlockStart(src []byte, blockSize int) int {
 		log.Fatalf("ciphertext length %d not multiple of blocksize %d", len(cipherText), blockSize)
 	}
 	blocks := util.Split(cipherText, blockSize)
-	for i:=0; i < len(blocks)-1; i++ {
+	for i := 0; i < len(blocks)-1; i++ {
 		if bytes.Equal(blocks[i], blocks[i+1]) {
-			return i*blockSize
+			return i * blockSize
 		}
 	}
 	return -1
@@ -29,7 +29,7 @@ func GetSameBlockStart(src []byte, blockSize int) int {
 
 func GetPrefixLength(o Oracle) int {
 	sameBlock := bytes.Repeat([]byte{'A'}, blockSize)
-	for i:=0; i < blockSize; i++ {
+	for i := 0; i < blockSize; i++ {
 		prefix := bytes.Repeat([]byte{'B'}, i)
 		chosenText := append(prefix, bytes.Repeat(sameBlock, 2)...)
 		cipherText := o.Encrypt(chosenText)
@@ -73,13 +73,13 @@ func CPA(oracle Oracle) []byte {
 	prefixPadding := bytes.Repeat(fillUp, prefixPaddingLength)
 	/* I want to do things a bit differently than in #12, and try out not to use util.Split */
 	// Maximum length the plaintext could be (can be shorter because of padding)
-	maxPlaintext := len(oracle.Encrypt(prefixPadding))-plainTextBegin // Base ciphertext length
+	maxPlaintext := len(oracle.Encrypt(prefixPadding)) - plainTextBegin // Base ciphertext length
 	// One plaintext block at a time
-	for i:=0;i < maxPlaintext; i = i+ blockSize {
+	for i := 0; i < maxPlaintext; i = i + blockSize {
 		// One byte at a time
-		for j:=1; j <= blockSize; j++ {
+		for j := 1; j <= blockSize; j++ {
 			// The part of the plaintext we are using for the table
-			var knownPlainText = make([]byte, blockSize - 1)
+			var knownPlainText = make([]byte, blockSize-1)
 			// If we don't have blocksize worth of plaintext, we add what
 			// we have to the chosentext because that's what the oracle will
 			// encrypt (we haven't shifted a whole block yet)
@@ -88,7 +88,7 @@ func CPA(oracle Oracle) []byte {
 			} else {
 				// Otherwise just pick the last 15 bytes of the plaintext
 				// Remember this is for looking up in the table.
-				copy(knownPlainText,plainText[len(plainText)-(blockSize-1):])
+				copy(knownPlainText, plainText[len(plainText)-(blockSize-1):])
 			}
 			knownPlainText = append(prefixPadding, knownPlainText...)
 			// Now we build a table of the ciphertexts from the known plaintext + every byte
@@ -99,7 +99,7 @@ func CPA(oracle Oracle) []byte {
 			cipherText := oracle.Encrypt(chosenPlainText)
 			// We need to select the right block of the ciphertext
 			blockStart := plainTextBegin + i
-			cipherBlock := cipherText[blockStart:blockStart+blockSize]
+			cipherBlock := cipherText[blockStart : blockStart+blockSize]
 			// Lookup the cipherblock in the table
 			plainTextByte, ok := table[string(cipherBlock)]
 			// If we could find the ciphertext in the table
@@ -117,7 +117,7 @@ func CPA(oracle Oracle) []byte {
 
 func cipherPrint(cipher []byte) {
 	blocks := util.Split(cipher, blockSize)
-	for _,block := range blocks {
+	for _, block := range blocks {
 		log.Printf("%x", block)
 	}
 	log.Printf("---")

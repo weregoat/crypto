@@ -4,7 +4,6 @@ import (
 	"bytes"
 )
 
-
 /*
 RFC 2315
 [...]
@@ -30,7 +29,7 @@ RFC 2315
         padding method is well-defined if and only if k < 256;
         methods for larger k are an open issue for further study.
 [...]
- */
+*/
 
 // Pad returns a slice of bytes from src with PKCS#7 padding at the end.
 func Pad(src []byte, k int) []byte {
@@ -86,7 +85,7 @@ func paddingStart(src []byte) int {
 	start := len(src) - n
 	// Check every that each of the n-1 bytes in the slice has the same
 	// value as n (we already know the last one has n)
-	for j:=1; j < n; j++ {
+	for j := 1; j < n; j++ {
 		b := int(src[i-j])
 		if b != n {
 			return -1

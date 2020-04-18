@@ -9,7 +9,7 @@ import (
 
 func TestOracle(t *testing.T) {
 	IWant := ";admin=true;"
-	for i:=0; i < 2000; i++ {
+	for i := 0; i < 2000; i++ {
 		pre, err := util.RandomBytes(util.RandomInt(0, 10))
 		if err != nil {
 			t.Error(err)

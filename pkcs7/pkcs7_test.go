@@ -35,10 +35,10 @@ func TestRemovePadding(t *testing.T) {
 		Error    bool
 	}{
 		{"Padded\x02\x02", "Padded", false},
-		{"Padded\x01", "Padded", false }, // Tricky, could be wrong
-		{"\x01", "",false},             // Empty string with one byte of padding
+		{"Padded\x01", "Padded", false}, // Tricky, could be wrong
+		{"\x01", "", false},             // Empty string with one byte of padding
 		{"\x02\x02", "", false},         // Empty string with two bytes of padding
-		{"Not really\x03\x03", "Not really\x03\x03",true},
+		{"Not really\x03\x03", "Not really\x03\x03", true},
 		{"This is not\x02\x02 padded either\x01\x02", "This is not\x02\x02 padded either\x01\x02", false},
 		{"Padded\x06\x06\x06\x06\x06\x06", "Padded", false}, // Same as first, but bigger block
 		{"ICE ICE BABY\x04\x04\x04\x04", "ICE ICE BABY", false},

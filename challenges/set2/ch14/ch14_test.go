@@ -10,19 +10,18 @@ import (
 
 const secret = "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"
 
-
 func TestGetSameBlockStart(t *testing.T) {
 	blockSize := ecb.BlockSize // AES
-	for i:=0; i < 2000; i++ {
+	for i := 0; i < 2000; i++ {
 		key, err := util.RandomBytes(blockSize)
 		if err != nil {
 			t.Error(err)
 		}
-		prefix, err := util.RandomBytes(util.RandomInt(1,4)*blockSize)
+		prefix, err := util.RandomBytes(util.RandomInt(1, 4) * blockSize)
 		if err != nil {
 			t.Error(err)
 		}
-		postfix, err := util.RandomBytes(util.RandomInt(1, 4)*blockSize)
+		postfix, err := util.RandomBytes(util.RandomInt(1, 4) * blockSize)
 		if err != nil {
 			t.Error(err)
 		}
@@ -34,10 +33,10 @@ func TestGetSameBlockStart(t *testing.T) {
 		plaintext = append(plaintext, postfix...)
 		cipherText, err := ecb.Encrypt(plaintext, key)
 		/*
-		for _,j := range util.Split(cipherText, blockSize) {
-			t.Logf("%x\n", j)
-		}
-		 */
+			for _,j := range util.Split(cipherText, blockSize) {
+				t.Logf("%x\n", j)
+			}
+		*/
 		expected := len(prefix)
 		start := GetSameBlockStart(cipherText, blockSize)
 		if expected != start {
@@ -47,8 +46,8 @@ func TestGetSameBlockStart(t *testing.T) {
 }
 
 func TestGetPrefixLength(t *testing.T) {
-	for i:=0; i < 20000; i++ {
-		plainText, err := util.RandomBytes(util.RandomInt(0,4*16))
+	for i := 0; i < 20000; i++ {
+		plainText, err := util.RandomBytes(util.RandomInt(0, 4*16))
 		if err != nil {
 			t.Error(err)
 		}
@@ -64,7 +63,6 @@ func TestGetPrefixLength(t *testing.T) {
 	}
 }
 
-
 func TestCPA(t *testing.T) {
 	oracle, err := New(secret)
 	if err != nil {
@@ -72,7 +70,7 @@ func TestCPA(t *testing.T) {
 	}
 	plainText := CPA(oracle)
 	solution, _ := base64.StdEncoding.DecodeString(secret)
-	if ! bytes.Equal(plainText, solution) {
+	if !bytes.Equal(plainText, solution) {
 		t.Errorf("expecting %+q, got %+q", solution, plainText)
 	}
 }
@@ -92,4 +90,3 @@ func TestCh13Secret(t *testing.T) {
 		t.Errorf("expecting %+q, got %+q", solution, plainText)
 	}
 }
-
