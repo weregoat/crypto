@@ -34,9 +34,19 @@ func New() (Oracle, error) {
 }
 
 func (o Oracle) Encrypt(src string) []byte {
-	input := strings.Join([]string{Prefix, strings.TrimSpace(strings.ToLower(src)), Postfix}, "")
+	var q string
+	// to prove that the attack is not specific to the way the sanitize input
+	switch util.RandomInt(0, 1) {
+	case 0:
+		q = strings.ReplaceAll(src, ";", "\";\"")
+		q = strings.ReplaceAll(q, "=", "\"=\"")
+	case 1:
+		q = url.QueryEscape(src)
+	}
 
-	plaintext := pkcs7.Pad([]byte(url.QueryEscape(input)), cbc.BlockSize)
+	input := strings.Join([]string{Prefix, strings.TrimSpace(q), Postfix}, "")
+	plaintext := pkcs7.Pad([]byte(input), cbc.BlockSize)
+	//plainPrint(plaintext)
 	ciphertext, err := cbc.Encrypt(plaintext, o.Key, o.IV)
 	if err != nil {
 		log.Print(err)
@@ -46,6 +56,7 @@ func (o Oracle) Encrypt(src string) []byte {
 
 func (o Oracle) IsAdmin(src []byte) bool {
 	plaintext, err := cbc.Decrypt(src, o.Key, o.IV)
+	//plainPrint(plaintext)
 	if err != nil {
 		log.Print(err)
 	}
