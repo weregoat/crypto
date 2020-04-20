@@ -25,3 +25,5 @@ Crypto nerds know where we're going with this. Bear with us.
 I am not sure I like the error part. I find it too harsh, in encryption/decryption cases. If the text was not padded properly, or with PKCS#7, I can still decrypt it and figure out the garbage at the end later.
 
 I think I will prefer a separate, specific function that check if the plaintext is padded or not according to PKCS#7.
+
+Possibly a precursor for [Padding Oracle Attack](https://en.wikipedia.org/wiki/Padding_oracle_attack#Padding_oracle_attack_on_CBC_encryption).
