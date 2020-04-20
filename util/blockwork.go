@@ -2,6 +2,7 @@ package util
 
 import (
 	"bytes"
+	"fmt"
 	"log"
 	"sort"
 )
@@ -21,8 +22,10 @@ type NormalisedDistance struct {
 	Median    float64 // Use the mean instead
 }
 
-// Split splits a byte slice into n byte slices of _blockSize_.
-func Split(src []byte, blockSize int) [][]byte {
+// LazySplit splits a byte slice into n byte slices of _blockSize_.
+// If the source length is not a multiple of of blocksize it will leave the
+// remainder out.
+func LazySplit(src []byte, blockSize int) [][]byte {
 	numberOfBlocks := len(src) / blockSize
 	blocks := make([][]byte, numberOfBlocks)
 	for i := 0; i < numberOfBlocks; i++ {
@@ -36,11 +39,36 @@ func Split(src []byte, blockSize int) [][]byte {
 	return blocks
 }
 
+// Split splits a byte slice into n byte slices of _blockSize_.
+// It will return an error if the source length is not multiple
+// of block size.
+func Split(src []byte, blockSize int) ([][]byte, error) {
+	var blocks [][]byte
+	if len(src)%blockSize != 0 {
+		err := fmt.Errorf(
+			"src length %d is not a multiple of block size %d",
+			len(src), blockSize,
+			)
+		return blocks, err
+	}
+	numberOfBlocks := len(src) / blockSize
+	blocks = make([][]byte, numberOfBlocks)
+	for i := 0; i < numberOfBlocks; i++ {
+		begin := i * blockSize
+		end := (i + 1) * blockSize
+		if end > len(src) {
+			break
+		}
+		blocks[i] = src[begin:end]
+	}
+	return blocks, nil
+}
+
 // Transpose returns a slice of slice bytes of the first byte of each block
 // and the second byte of each block and so forth...
 func Transpose(cipherText []byte, keySize int) [][]byte {
 	var tBlocks = make([][]byte, keySize) // List of transposed blocks
-	blocks := Split(cipherText, keySize)
+	blocks := LazySplit(cipherText, keySize)
 	for _, block := range blocks {
 		for i := 0; i < keySize; i++ {
 			if i < len(block) {
@@ -67,7 +95,7 @@ func GetBlockDistances(cipherText []byte, min, max int) []NormalisedDistance {
 		}
 		var distance = NormalisedDistance{BlockSize: size}
 		// Split the cipherText in blocks of the given size
-		blocks := Split(cipherText, size)
+		blocks := LazySplit(cipherText, size)
 		// Now we go through all the blocks and calculate the Hamming distance
 		// between each block and the next
 		var distances []float64 // We'll store here the normalised Hamming distances for median and mean calculation
@@ -104,7 +132,7 @@ func GetBlockDistances(cipherText []byte, min, max int) []NormalisedDistance {
 // identical blocks; could be more than one block, could be repeated more
 // than once).
 func HasRepeatingBlocks(src []byte, blockSize int) bool {
-	blocks := Split(src, blockSize)
+	blocks := LazySplit(src, blockSize)
 	for i := 0; i < len(blocks)-1; i++ {
 		for j := i + 1; j < len(blocks); j++ {
 			if bytes.Equal(blocks[i], blocks[j]) {

@@ -18,7 +18,10 @@ func TestChallenge(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		blocks := util.Split(o.CipherText, o.BlockSize)
+		blocks, err := util.Split(o.CipherText, o.BlockSize)
+		if err != nil {
+			t.Error(err)
+		}
 		for j, block := range blocks {
 			t.Logf("block %d: %x", j, block)
 		}

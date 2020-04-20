@@ -20,7 +20,7 @@ func Encrypt(plainText, key, iv []byte) ([]byte, error) {
 	if len(plainText)%BlockSize != 0 {
 		blocks = pkcs7.Split(plainText, BlockSize)
 	} else {
-		blocks = util.Split(plainText, BlockSize)
+		blocks = util.LazySplit(plainText, BlockSize)
 	}
 	// Initialise the AES cipher block
 	cipher, err := aes.NewCipher(key)
@@ -69,7 +69,10 @@ func Decrypt(cipherText, key, iv []byte) ([]byte, error) {
 	// We should not need padding.
 	// PKCS7 split function would work as well, but here
 	// using this for
-	blocks := util.Split(cipherText, BlockSize)
+	blocks, err := util.Split(cipherText, BlockSize)
+	if err != nil {
+		return plainText, err
+	}
 	// Go through each block and decipher it.
 	for _, block := range blocks {
 		// Copy the block, so we don't change it

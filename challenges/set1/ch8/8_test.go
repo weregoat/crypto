@@ -29,7 +29,7 @@ func TestChallenge8(t *testing.T) {
 			t.Error(err)
 		}
 		if util.HasRepeatingBlocks(cipherText, 16) {
-			split := util.Split(cipherText, 16)
+			split := util.LazySplit(cipherText, 16)
 			t.Logf("line %d has repeating blocks", line)
 			for i, b := range split {
 				t.Logf("block %d: %x\n", i, b)

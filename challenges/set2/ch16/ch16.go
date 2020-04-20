@@ -17,7 +17,10 @@ func PoisonCipherText(o Oracle) []byte {
 	plaintext := string(p1) + string(p2) // Innocent enough plaintext
 	c := o.Encrypt(plaintext)            // We get the innocent ciphertext
 	//cipherPrint(c)
-	blocks := util.Split(c, blockSize)
+	blocks, err := util.Split(c, blockSize)
+	if err != nil {
+		log.Fatal(err)
+	}
 	c1 := blocks[2]                       // Get C1 generated with P1
 	e2, err := util.FixedXORBytes(c1, p2) // Calculate E2; E2 = C1^P2
 	check(err)
@@ -39,7 +42,10 @@ func check(err error) {
 }
 
 func cipherPrint(cipher []byte) {
-	blocks := util.Split(cipher, cbc.BlockSize)
+	blocks, err := util.Split(cipher, cbc.BlockSize)
+	if err != nil {
+		log.Println(err)
+	}
 	for _, block := range blocks {
 		fmt.Printf("%x\n", block)
 	}

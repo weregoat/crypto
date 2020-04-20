@@ -42,7 +42,7 @@ func TestOracle(t *testing.T) {
 		}
 		if o.IsAdmin(fakeCipher) == false {
 			t.Log("ciphertext:")
-			for _, block := range util.Split(fakeCipher, cbc.BlockSize) {
+			for _, block := range util.LazySplit(fakeCipher, cbc.BlockSize) {
 				t.Logf("%x", block)
 			}
 			t.Log("---")

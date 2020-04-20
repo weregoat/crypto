@@ -17,7 +17,7 @@ func GetSameBlockStart(src []byte, blockSize int) int {
 	if len(cipherText)%blockSize != 0 {
 		log.Fatalf("ciphertext length %d not multiple of blocksize %d", len(cipherText), blockSize)
 	}
-	blocks := util.Split(cipherText, blockSize)
+	blocks := util.LazySplit(cipherText, blockSize)
 	for i := 0; i < len(blocks)-1; i++ {
 		if bytes.Equal(blocks[i], blocks[i+1]) {
 			return i * blockSize
@@ -116,7 +116,10 @@ func CPA(oracle Oracle) []byte {
 }
 
 func cipherPrint(cipher []byte) {
-	blocks := util.Split(cipher, blockSize)
+	blocks, err := util.Split(cipher, blockSize)
+	if err != nil {
+		log.Println(err)
+	}
 	for _, block := range blocks {
 		log.Printf("%x", block)
 	}

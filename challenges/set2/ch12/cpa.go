@@ -50,7 +50,7 @@ func CPA(oracle Oracle) []byte {
 	shortBlock := blockSize - 1 // A whole block minus one byte
 	chosenByte := []byte{'A'}   // It doesn't really matter
 	// How many blocks the plaintext has
-	cipherBlocks := len(util.Split(oracle.Encrypt([]byte{}), blockSize))
+	cipherBlocks := len(util.LazySplit(oracle.Encrypt([]byte{}), blockSize))
 	// For each of the blocks
 	for i := 0; i < cipherBlocks; i++ {
 		// One byte at a time
