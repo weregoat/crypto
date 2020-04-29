@@ -3,6 +3,7 @@ package aes
 import (
 	"bytes"
 	"encoding/hex"
+	"gitlab.com/weregoat/crypto/pkcs7"
 	"testing"
 )
 
@@ -150,7 +151,8 @@ func TestMultiBlocks(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	p, err := Decrypt(cipherText, key, iv)
+	decrypted, err := Decrypt(cipherText, key, iv)
+	p := pkcs7.RemovePadding(decrypted)
 	if err != nil {
 		t.Error(err)
 	}

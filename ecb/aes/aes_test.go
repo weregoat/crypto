@@ -50,7 +50,7 @@ func TestDecryptAES128(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		if string(decrypted) != string(plainText) {
+		if string(pkcs7.RemovePadding(decrypted)) != string(plainText) {
 			t.Errorf("expecting %q, got %q", plainText, decrypted)
 		}
 
@@ -192,7 +192,8 @@ func TestEncryptDecript(t *testing.T) {
 	if err != nil {
 		t.Errorf("%q", cipherText)
 	}
-	p, err := Decrypt(cipherText, key)
+	encrypted, err := Decrypt(cipherText, key)
+	p := pkcs7.RemovePadding(encrypted)
 	if err != nil {
 		t.Error(err)
 	}

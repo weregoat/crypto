@@ -3,6 +3,7 @@ package ch10
 import (
 	"encoding/base64"
 	"gitlab.com/weregoat/crypto/cbc/aes"
+	"gitlab.com/weregoat/crypto/pkcs7"
 	"io/ioutil"
 	"log"
 	"testing"
@@ -18,6 +19,7 @@ func TestChallenge8(t *testing.T) {
 	key := []byte("YELLOW SUBMARINE")
 	iv := make([]byte, 16) // Initialised a \x00
 	plainText, err := aes.Decrypt(cipherText, key, iv)
+	plainText = pkcs7.RemovePadding(plainText)
 	if err != nil {
 		t.Error(err)
 	}

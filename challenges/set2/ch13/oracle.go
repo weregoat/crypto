@@ -3,6 +3,7 @@ package ch13
 import (
 	"fmt"
 	ecb "gitlab.com/weregoat/crypto/ecb/aes"
+	"gitlab.com/weregoat/crypto/pkcs7"
 	"gitlab.com/weregoat/crypto/util"
 	"strings"
 )
@@ -46,7 +47,7 @@ func (o Oracle) Decrypt(src string) map[string]string {
 	if debug {
 		fmt.Printf("oracle returns: %+q\n", data)
 	}
-	return parse(string(data))
+	return parse(string(pkcs7.RemovePadding(data)))
 }
 
 func parse(src string) map[string]string {

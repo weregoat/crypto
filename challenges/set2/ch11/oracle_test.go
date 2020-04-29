@@ -5,6 +5,7 @@ import (
 	"crypto/aes"
 	cbc "gitlab.com/weregoat/crypto/cbc/aes"
 	ecb "gitlab.com/weregoat/crypto/ecb/aes"
+	"gitlab.com/weregoat/crypto/pkcs7"
 	"gitlab.com/weregoat/crypto/util"
 	"testing"
 )
@@ -62,7 +63,7 @@ tests:
 				t.Log(err)
 				//break tests
 			}
-			if !bytes.Equal(o.PlainText, plainText) {
+			if !bytes.Equal(o.PlainText, pkcs7.RemovePadding(plainText)) {
 				t.Fail()
 				break tests
 			}
@@ -86,7 +87,7 @@ tests:
 				t.Error(err)
 				break tests
 			}
-			if !bytes.Equal(o.PlainText, plainText) {
+			if !bytes.Equal(o.PlainText, pkcs7.RemovePadding(plainText)) {
 				t.Fail()
 				break tests
 			}
