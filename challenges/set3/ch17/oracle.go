@@ -5,9 +5,10 @@ import (
 	cbc "gitlab.com/weregoat/crypto/cbc/aes"
 	"gitlab.com/weregoat/crypto/pkcs7"
 	"gitlab.com/weregoat/crypto/util"
+	"log"
 )
 
-var plainTexts = []string {
+var defaultPlaintexts = []string {
 "MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=",
 "MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIHB1bXBpbic=",
 "MDAwMDAyUXVpY2sgdG8gdGhlIHBvaW50LCB0byB0aGUgcG9pbnQsIG5vIGZha2luZw==",
@@ -21,11 +22,15 @@ var plainTexts = []string {
 }
 
 type Oracle struct {
+	plainTexts []string
 	key []byte
 	iv []byte
 }
 
-func NewOracle() (Oracle, error) {
+func NewOracle(plainTexts ...string) (Oracle, error) {
+	if len(plainTexts) == 0 {
+		plainTexts = defaultPlaintexts
+	}
 	o := Oracle{}
 	key, err := util.RandomBytes(cbc.BlockSize)
 	if err != nil {
@@ -37,24 +42,28 @@ func NewOracle() (Oracle, error) {
 	}
 	o.key = key
 	o.iv = iv
+	o.plainTexts = plainTexts
 	return o, nil
 }
 
-func (o Oracle) Encrypt() (cipherText []byte, iv []byte, err error) {
-	i := util.RandomInt(0, len(plainTexts)-1)
-	plaintext, err := base64.StdEncoding.DecodeString(plainTexts[i])
+func (o Oracle) Encrypt() (cipherText []byte, iv []byte) {
+	i := util.RandomInt(0, len(o.plainTexts)-1)
+	plaintext, err := base64.StdEncoding.DecodeString(o.plainTexts[i])
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 	pad := pkcs7.Pad(plaintext, cbc.BlockSize)
 	cipherText, err = cbc.Encrypt(pad, o.key, o.iv)
+	if err != nil {
+		log.Fatal(err)
+	}
 	return
 }
 
-func (o Oracle) CheckPadding(cipherText []byte) (bool, error) {
+func (o Oracle) CheckPadding(cipherText []byte) bool {
 	decrypted, err := cbc.Decrypt(cipherText, o.key, o.iv)
 	if err != nil {
-		return false, err
+		log.Fatal(err)
 	}
-	return pkcs7.IsPadded(decrypted), nil 
+	return pkcs7.IsPadded(decrypted)
 }
