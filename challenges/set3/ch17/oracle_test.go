@@ -1,49 +1,59 @@
 package ch17
 
 import (
-	"encoding/base64"
+	"bytes"
 	cbc "gitlab.com/weregoat/crypto/cbc/aes"
 	"gitlab.com/weregoat/crypto/pkcs7"
-	"gitlab.com/weregoat/crypto/util"
 	"testing"
 )
 
 // Test with padded plaintexts
 func TestOKPadding(t *testing.T) {
-	var texts []string
-	n := util.RandomInt(1,20)
-	for i:=0; i < n; i++ {
-		r, err := util.RandomBytes(util.RandomInt(0,60))
-		if err != nil {
-			t.Error(err)
-			t.Fail()
-			break
-		}
-		p := pkcs7.Pad(r, cbc.BlockSize)
-		t.Logf("generated padded text: %+q", p)
-		e := base64.StdEncoding.EncodeToString(p)
-		texts = append(texts, e)
+	tests := []struct {
+		PlainText string
+		Padded  bool
+	}{
+		{"BBBBBBBBBBBBBBB\x01", true},
+		{"BBBBBBBBBBBBBB\x02\x02", true},
+		{"BBBBBBBBBBBBB\x03\x03\x03", true},
+		{"BBBBBBBBBBBB\x04\x04\x04\x04", true},
+		{"BBBBBBBBBBBBBBB\x02", false},
+		{"BBBBBBBBBBBBBB\x01\x01", true},
+		{"BBBBBBBBBBBBBB\x01\x02", false},
+		{"BBBBBBBBBBBBBB\x03\x03", false},
+		{"BBBBBBBBBBBBBBB\x00", false},
 	}
-	o, err := NewOracle(texts...)
-	if err != nil {
-		t.Error(err)
-	}
-	for j:=0; j < 100; j++ {
-		c, _ := o.Encrypt()
+	prefix := bytes.Repeat([]byte{'A'}, cbc.BlockSize)
+	for _,test := range tests {
+		text := append(prefix, []byte(test.PlainText)...)
+		o, err := NewOracle()
 		if err != nil {
 			t.Error(err)
-			t.Fail()
 			break
 		}
-		result := o.CheckPadding(c)
-		if err != nil {
-			t.Error(err)
-			t.Fail()
-			break
-		}
-		if result != true {
-			t.Errorf("expecting oracle to return good padding, got wrong one")
+		c, err := cbc.Encrypt(text, o.Key, o.IV)
+		if o.CheckPadding(c) != test.Padded {
+			t.Errorf("expecting oracle to return %t for text in %+q", test.Padded, text)
 		}
 	}
 }
 
+
+
+func TestOracle_Encrypt(t *testing.T) {
+	for i:=0; i < 50; i++ {
+		o, err := NewOracle()
+		if err != nil {
+			t.Error(err)
+			break
+		}
+		c, iv := o.Encrypt()
+		plainText, err := cbc.Decrypt(c, o.Key, iv)
+		if string(pkcs7.RemovePadding(plainText)) != o.Plaintext {
+			t.Errorf("expecting ciphertext to decrypt to %+q, got %+q",
+				o.Plaintext,
+				pkcs7.RemovePadding(plainText),
+				)
+		}
+	}
+}

@@ -22,9 +22,10 @@ var defaultPlaintexts = []string {
 }
 
 type Oracle struct {
-	plainTexts []string
-	key []byte
-	iv []byte
+	PlainTexts []string
+	Key []byte
+	IV []byte
+	Plaintext string
 }
 
 func NewOracle(plainTexts ...string) (Oracle, error) {
@@ -40,28 +41,33 @@ func NewOracle(plainTexts ...string) (Oracle, error) {
 	if err != nil {
 		return o, err
 	}
-	o.key = key
-	o.iv = iv
-	o.plainTexts = plainTexts
+	o.Key = key
+	o.IV = iv
+	o.PlainTexts = plainTexts
 	return o, nil
 }
 
-func (o Oracle) Encrypt() (cipherText []byte, iv []byte) {
-	i := util.RandomInt(0, len(o.plainTexts)-1)
-	plaintext, err := base64.StdEncoding.DecodeString(o.plainTexts[i])
+func (o *Oracle) Encrypt() (cipherText []byte, iv []byte) {
+	i := 0
+	if len(o.PlainTexts) > 1 {
+		i = util.RandomInt(0, len(o.PlainTexts)-1)
+	}
+	plaintext, err := base64.StdEncoding.DecodeString(o.PlainTexts[i])
 	if err != nil {
 		log.Fatal(err)
 	}
+	o.Plaintext = string(plaintext)
 	pad := pkcs7.Pad(plaintext, cbc.BlockSize)
-	cipherText, err = cbc.Encrypt(pad, o.key, o.iv)
+	cipherText, err = cbc.Encrypt(pad, o.Key, o.IV)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return
+	return cipherText, o.IV
 }
 
-func (o Oracle) CheckPadding(cipherText []byte) bool {
-	decrypted, err := cbc.Decrypt(cipherText, o.key, o.iv)
+func (o *Oracle) CheckPadding(cipherText []byte) bool {
+	decrypted, err := cbc.Decrypt(cipherText, o.Key, o.IV)
+
 	if err != nil {
 		log.Fatal(err)
 	}

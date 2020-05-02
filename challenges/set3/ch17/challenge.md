@@ -61,27 +61,27 @@ C2 => D2^C1 => P2
 
 If we change any byte of C1, that will result in a change in the same byte of P2 (regardless of the decryption, because it's done on C2).
 
-The idea is to modify C1 in a way that we end up with a plaintext P2' we know; since the oracle tells us if the last byte is 0x01, or 0x02 and 0x02, or 0x03 0x03 0x03 etc) we exploit that.
+The idea is to modify C1 in a way that we end up with a plaintext P2' we know; since the oracle tells us if the last byte is 0x01 (or 0x02 and 0x02, or 0x03 0x03 0x03 etc) we exploit that.
 
 Something like this:
 We start by changing the last byte (15) of C1.
 
-We submit the ciphertexts (C1' and C2) to the oracle.
+We submit the ciphertexts (I1 and C2) to the oracle.
 If it returns true it's possibly because the last byte of the resulting plaintext (P2') is 0x01 (or that the last two bytes are 0x02 and 0x02, or the last three 0x03 0x03 0x03; even less probable).
 If it returns false, well the last byte of P2' is not 0x01
 
-We keep trying all the 256 possible values for C1'[15] until we get P2'[15] as 0x01.
+We keep trying all the 256 possible values for I1[15] until we get P2'[15] as 0x01.
 
-We can then calculate P2[15] with C1'[15]^P2'[15] (because P2^C1 => D2)
+We can then calculate D2[15] with I1[15]^P2'[15] (because P2^C1 => D2)
 
 We now have D2[15] and C1[15], so we can get the P2[15] by XORing them: D2[15]^C1[15] => P2[15]
 
 The next step is to try to get the last **two** bytes of P2' to be 0x02 and 0x02 and so forth.
 
-We now now D2[15] so we can calculate C1'[15] to result in P2'[15] == 0x02.
+We know D2[15] so we can calculate I1[15] to result in P2'[15] == 0x02.
 i.e. D2[15]^0x02 => C1'[15]
 
-And we repeat the procedure to extract a P2'[14] == 0x02 by manipulating C1'[14] and checking with the oracle.
+And we repeat the procedure to extract a P2'[14] == 0x02 by manipulating I1[14] and checking with the oracle.
 
-We keep going until the have P2, and then we can do the same for P1, with IV instead of C1...
+We keep going until the have P2, and then we can do the same for P1, with IV instead of C1 and C1 as C2...
 

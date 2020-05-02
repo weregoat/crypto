@@ -75,6 +75,9 @@ func paddingStart(src []byte) int {
 	i := len(src) - 1
 	// The value as integer (is really an uint, but int is easier to handle around)
 	n := int(src[i])
+	if n <= 0 { // \x00 is not really a correct padding.
+		return -1
+	}
 	// The value is supposed to be the number of bytes of padding we should
 	// remove. It cannot be higher than the size of the slice (although it can
 	// be the same, if the plaintext is an empty string).
@@ -100,7 +103,7 @@ func IsPadded(plainText []byte) bool {
 	// I don't want to go all ontological on this, but it seems to me that
 	// a padded string **needs** to have a point where the padding starts
 	// otherwise is not padded.
-	if paddingStart(plainText) > 0 {
+	if paddingStart(plainText) >= 0 {
 		return true
 	}
 	return false

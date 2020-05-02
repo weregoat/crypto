@@ -16,6 +16,8 @@ func TestPad(t *testing.T) {
 		{"1234", 0, "1234"},
 		{"1234", -3, "1234"},
 		{"12345678901", 5, "12345678901\x04\x04\x04\x04"},
+		{"1234\x00", 4, "1234\x00\x03\x03\x03"},
+
 	}
 	for _, test := range tests {
 		src := []byte(test.Src)
@@ -52,6 +54,37 @@ func TestRemovePadding(t *testing.T) {
 		t.Logf("Dst: %+q\n", s)
 		if string(s) != test.Expected {
 			t.Errorf("expecting %q, got %q", test.Expected, s)
+		}
+	}
+}
+
+func TestIsPadded(t *testing.T) {
+
+	tests := []struct {
+		Src      string
+		Padded bool
+	}{
+		{"123", false},
+		{"123\x01", true},
+		{"123\x00", false},
+		{"123\x02\x02", true},
+		{"123\x01\x02", false},
+		{"123\x01\x00", false},
+		{"123\x03\x02\x01", true}, // 123\x03\x02
+		{"", false},
+		{"\x01", true}, // Empty string blocksize 1
+		{"\x02\x02", true}, // Empty string blocksize 2
+		{"\x00", false}, // \x00
+		{"\x01\x01", true}, // \x01
+
+	}
+	for _, test := range tests {
+		src := []byte(test.Src)
+		padded := IsPadded(src)
+		if padded != test.Padded {
+			t.Errorf(
+				"expecting %+q block to result in %t, but got %t",
+				test.Src, test.Padded, padded)
 		}
 	}
 }
