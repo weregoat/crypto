@@ -18,10 +18,10 @@ func TestAttack(t *testing.T) {
 		cipherText, iv := oracle.Encrypt()
 		plainText := string(attackOracle(oracle, cipherText, iv))
 		// The first block *should* always succeed
-		if plainText[0:16] != oracle.Plaintext[0:16] {
-			t.Errorf("Expecting %s, but got %s",
-				oracle.Plaintext[0:16],
-				plainText[0:16],
+		if plainText != oracle.Plaintext {
+			t.Errorf("Expecting %+q, but got %+q",
+				oracle.Plaintext,
+				plainText,
 			)
 			t.Fail()
 			break
