@@ -2,6 +2,7 @@ package aes
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/hex"
 	"testing"
 )
@@ -111,3 +112,34 @@ func TestDecryptBlock(t *testing.T) {
 
 }
 
+func TestDecrypt(t *testing.T) {
+	cipherText, err := base64.StdEncoding.DecodeString("L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ==")
+	solution := "Yo, VIP Let's kick it Ice, Ice, baby Ice, Ice, baby "
+	if err != nil {
+		t.Error(err)
+	}
+
+	plainText, err := Decrypt([]byte("YELLOW SUBMARINE"), cipherText)
+	if err != nil {
+		t.Error(err)
+	}
+	if plainText != solution {
+		t.Errorf("expecting %+q, got %+q", solution, plainText)
+
+	}
+}
+
+func TestEncrypt(t *testing.T) {
+	solution, err := base64.StdEncoding.DecodeString("L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ==")
+	if err != nil {
+		t.Error(err)
+	}
+	cipherText, err := Encrypt([]byte("YELLOW SUBMARINE"), "Yo, VIP Let's kick it Ice, Ice, baby Ice, Ice, baby ")
+	if err != nil {
+		t.Error(err)
+	}
+	if !bytes.Equal(cipherText, solution) {
+		t.Errorf("expecting %+q, got %+q", solution, cipherText)
+
+	}
+}
